@@ -1,0 +1,29 @@
+{
+  "name": "lora-packet",
+  "version": "0.0.1",
+  "description": "LoRa packet decoder/encoder",
+  "keywords": [
+    "lora",
+    "packet",
+    "parse",
+    "decrypt",
+    "verify",
+    "encode",
+    "decode"
+],
+  "main": "lib/index.js",
+  "private": true,
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha -g unit"
+  },
+  "license": "",
+  "dependencies": {
+    "crypto-js":"*",
+    "node-aes-cmac":"*"
+  },
+  "devDependencies": {
+    "js-base64":"*",
+    "mocha": "*",
+    "chai":"*"
+  }
+}

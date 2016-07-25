@@ -19,6 +19,11 @@ A library to decode and encode packets for LoRa/LoRaWAN<sup>TM</sup> radio commu
 * handles uplink & downlink packets, network join etc
 * ability to create LoRa format packet
 
+## Endianness
+
+* LoRa sends data over the wire in little-endian format  (see spec #1.2 "The  octet  order  for  all  multi-­octet  fields  is  little  endian"
+* lora-packet attempts to hide this from you, so e.g. DevAddr & FCnt are presented in big-endian format.  For example, DevAddr=49be7df1 is sent over the wire as 0xf1, 0x7d, 0xbe, 0x49.
+
 # Example
 
 `example goes here`

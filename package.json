@@ -20,7 +20,6 @@
     "url": "https://github.com/anthonykirby/lora-packet/issues"
   },
   "main": "lib/index.js",
-  "private": true,
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha -g unit"
   },

@@ -248,6 +248,36 @@ module.exports = function () {
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
+        it('should encrypt if keys provided', function () {
+            var packet = lora_packet.fromFields(
+                {
+//                    payload: new Buffer('95437876', 'hex'),
+                    payload: 'test',
+                    DevAddr: new Buffer('49be7df1', 'hex'),
+                    FCnt: new Buffer('0002', 'hex')
+                }
+                , new Buffer("ec925802ae430ca77fd3dd73cb2cc588", 'hex') // AppSKey
+                , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex') // NwkSKey
+            );
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('40f17dbe4900020001954378762b11ff0d', 'hex'),
+                MHDR: new Buffer('40', 'hex'),
+                MACPayload: new Buffer('f17dbe490002000195437876', 'hex'),
+                MIC: new Buffer('2b11ff0d', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('f17dbe49000200', 'hex'),
+                DevAddr: new Buffer('49be7df1', 'hex'),
+                FCnt: new Buffer('0002', 'hex'),
+                FPort: new Buffer('01', 'hex'),
+                FRMPayload: new Buffer('95437876', 'hex')
+            };
+            expect(packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+
     });
 };
 

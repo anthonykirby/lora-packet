@@ -251,7 +251,6 @@ module.exports = function () {
         it('should encrypt if keys provided', function () {
             var packet = lora_packet.fromFields(
                 {
-//                    payload: new Buffer('95437876', 'hex'),
                     payload: 'test',
                     DevAddr: new Buffer('49be7df1', 'hex'),
                     FCnt: new Buffer('0002', 'hex')

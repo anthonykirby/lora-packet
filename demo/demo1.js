@@ -43,9 +43,9 @@ var constructedPacket = lora_packet.fromFields({
             FPending: false   // default = false
         },
         FCnt: new Buffer('0003', 'hex'), // can supply a buffer or a number
-        payload: "message"
+        payload: 'test'
     }
-    , null  // AppSKey
+    , new Buffer("ec925802ae430ca77fd3dd73cb2cc588", 'hex') // AppSKey
     , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex') // NwkSKey
 );
 console.log("constructedPacket.toString()=\n" + constructedPacket);

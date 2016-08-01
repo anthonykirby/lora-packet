@@ -55,6 +55,161 @@ module.exports = function () {
         });
 
 
+        it('should create packet with MType as integer', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    MType: 5
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('A0d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                MHDR: new Buffer('A0', 'hex'),
+                MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('d4c3b2a1000100', 'hex'),
+                DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                FCnt: new Buffer('0001', 'hex'),
+                FPort: new Buffer('01', 'hex'),
+                FRMPayload: new Buffer('test')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+        it('should create packet with MType as string', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    MType: 'Confirmed Data Up'
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('80d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                MHDR: new Buffer('80', 'hex'),
+                MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('d4c3b2a1000100', 'hex'),
+                DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                FCnt: new Buffer('0001', 'hex'),
+                FPort: new Buffer('01', 'hex'),
+                FRMPayload: new Buffer('test')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+
+
+        it('should create packet with FCnt as buffer', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCnt: new Buffer('1234', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('40d4c3b2a10034120174657374eeeeeeee', 'hex'),
+                MHDR: new Buffer('40', 'hex'),
+                MACPayload: new Buffer('d4c3b2a10034120174657374', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('d4c3b2a1003412', 'hex'),
+                DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                FCnt: new Buffer('1234', 'hex'),
+                FPort: new Buffer('01', 'hex'),
+                FRMPayload: new Buffer('test')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+
+        it('should create packet with FCnt as number', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCnt: 4660
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('40d4c3b2a10034120174657374eeeeeeee', 'hex'),
+                MHDR: new Buffer('40', 'hex'),
+                MACPayload: new Buffer('d4c3b2a10034120174657374', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('d4c3b2a1003412', 'hex'),
+                DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                FCnt: new Buffer('1234', 'hex'),
+                FPort: new Buffer('01', 'hex'),
+                FRMPayload: new Buffer('test')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+
+        it('should create packet with correct FCtrl.ACK', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCtrl: { ACK:true}
+                });
+            expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('20','hex'));
+            expect(packet.getFCtrlACK()).to.equal(true);
+            packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCtrl: { ACK:false}
+                });
+            expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('00','hex'));
+            expect(packet.getFCtrlACK()).to.equal(false);
+        });
+
+        it('should create packet with correct FCtrl.ADR', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCtrl: { ADR:true }
+                });
+            expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('80','hex'));
+            expect(packet.getFCtrlADR()).to.equal(true);
+            packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCtrl: { ACK:false}
+                });
+            expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('00','hex'));
+            expect(packet.getFCtrlADR()).to.equal(false);
+        });
+        it('should create packet with correct FCtrl when all flags set', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCtrl: { ADR:true, ACK:true, ADRACKReq:true, FPending:true }
+                });
+            expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('F0','hex'));
+            expect(packet.getFCtrlADR()).to.equal(true);
+            expect(packet.getFCtrlACK()).to.equal(true);
+            expect(packet.getFCtrlFPending()).to.equal(true);
+        });
+
+
         it('should calculate MIC if NwkSKey provided', function () {
             var packet = lora_packet.fromFields(
                 {

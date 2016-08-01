@@ -12,7 +12,7 @@ module.exports = function () {
 
         it('should calculate & verify correct MIC', function () {
             var message_hex = "40F17DBE4900020001954378762B11FF0D";
-            var packet = lora_packet.create(new Buffer(message_hex, 'hex'))
+            var packet = lora_packet.fromWire(new Buffer(message_hex, 'hex'))
 
             var NwkSKey_hex = "44024241ed4ce9a68c6a8bc055233fd3";
             var calculatedMIC = lora_packet.getMIC(packet, new Buffer(NwkSKey_hex, 'hex'));
@@ -23,7 +23,7 @@ module.exports = function () {
 
         it('should calculate & verify correct MIC', function () {
             var message_hex = "40F17DBE49000300012A3518AF";
-            var packet = lora_packet.create(new Buffer(message_hex, 'hex'))
+            var packet = lora_packet.fromWire(new Buffer(message_hex, 'hex'))
 
             var NwkSKey_hex = "44024241ed4ce9a68c6a8bc055233fd3";
             var calculatedMIC = lora_packet.getMIC(packet, new Buffer(NwkSKey_hex, 'hex'));
@@ -35,7 +35,7 @@ module.exports = function () {
         it('should detect incorrect MIC', function () {
             // bodged MIC so it's different
             var message_hex = "40F17DBE49000300012A3518AA"; // aa not af
-            var packet = lora_packet.create(new Buffer(message_hex, 'hex'))
+            var packet = lora_packet.fromWire(new Buffer(message_hex, 'hex'))
 
             var NwkSKey_hex = "44024241ed4ce9a68c6a8bc055233fd3";
             var calculatedMIC = lora_packet.getMIC(packet, new Buffer(NwkSKey_hex, 'hex'));
@@ -46,7 +46,7 @@ module.exports = function () {
 
         it('should calculate & verify correct MIC for ACK', function () {
             var message_hex = "60f17dbe4920020001f9d65d27";
-            var packet = lora_packet.create(new Buffer(message_hex, 'hex'))
+            var packet = lora_packet.fromWire(new Buffer(message_hex, 'hex'))
 
             var NwkSKey_hex = "44024241ed4ce9a68c6a8bc055233fd3";
             var calculatedMIC = lora_packet.getMIC(packet, new Buffer(NwkSKey_hex, 'hex'));

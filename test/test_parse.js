@@ -26,7 +26,7 @@ module.exports = function () {
                 FRMPayload: new Buffer('95437876', 'hex')
             };
 
-            var parsed = lora_packet.create(new Buffer(message_hex, 'hex'));
+            var parsed = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
 
             expect(parsed).to.not.be.undefined;
             expect(parsed.getBuffers()).to.not.be.undefined;
@@ -59,7 +59,7 @@ module.exports = function () {
                 FRMPayload: new Buffer('', 'hex')
             };
 
-            var parsed = lora_packet.create(new Buffer(message_hex, 'hex'));
+            var parsed = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
 
             expect(parsed).to.not.be.undefined;
             expect(parsed.getBuffers()).to.not.be.undefined;
@@ -90,7 +90,7 @@ module.exports = function () {
                 FRMPayload: new Buffer('55332de41a11adc072553544429ce7787707d1c316e027e7e5e334263376affb8aa17ad30075293f28dea8a2', 'hex')
             };
 
-            var parsed = lora_packet.create(new Buffer(message_hex, 'hex'));
+            var parsed = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
 
             expect(parsed).to.not.be.undefined;
             expect(parsed.getBuffers()).to.not.be.undefined;
@@ -122,7 +122,7 @@ module.exports = function () {
                 FRMPayload: new Buffer('', 'hex')
             };
 
-            var parsed = lora_packet.create(new Buffer(message_hex, 'hex'));
+            var parsed = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
 
             expect(parsed).to.not.be.undefined;
             expect(parsed.getBuffers()).to.not.be.undefined;
@@ -134,6 +134,11 @@ module.exports = function () {
             expect(parsed.getFCnt()).to.equal(2);
             expect(parsed.getFCtrlACK()).to.equal(true);
             expect(parsed.getFCtrlADR()).to.equal(false);
+        });
+
+        it('should return null if given bogus input', function () {
+            var parsed = lora_packet.fromWire("not a buffer");
+            expect(parsed).to.be.null;
         });
 
     });

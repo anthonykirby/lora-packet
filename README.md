@@ -24,9 +24,9 @@ A pure [node.js](http://nodejs.org/) library to decode and encode packets for Lo
 
 ## Usage
 
-### create(data)
+### fromWire(data)
 
-Parse & create packet structure from buffer
+Parse & create packet structure from wire-format buffer
 
 ### packet.getBuffers()
 
@@ -79,7 +79,7 @@ decrypts and returns the payload (NB the correct key is chosed depending on the 
 var lora_packet = require('lora-packet');
 
 // decode a packet
-var packet = lora_packet.create(new Buffer('40F17DBE4900020001954378762B11FF0D', 'hex'));
+var packet = lora_packet.fromWire(new Buffer('40F17DBE4900020001954378762B11FF0D', 'hex'));
 
 // debug: prints out contents
 // - contents depend on packet type

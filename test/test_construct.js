@@ -209,6 +209,16 @@ module.exports = function () {
             expect(packet.getFCtrlFPending()).to.equal(true);
         });
 
+        it('should create packet with correct FPort', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'test',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FPort: 42
+                });
+            expect(packet.getFPort()).to.equal(42);
+        });
+
 
         it('should calculate MIC if NwkSKey provided', function () {
             var packet = lora_packet.fromFields(
@@ -237,6 +247,7 @@ module.exports = function () {
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
         });
+
     });
 };
 

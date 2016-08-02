@@ -141,5 +141,10 @@ module.exports = function () {
             expect(parsed).to.be.null;
         });
 
+        it('should expose constants', function () {
+            var constants = lora_packet.constants();
+            expect(constants.MTYPE_CONFIRMED_DATA_DOWN).to.equal(5);
+        });
+
     });
 };

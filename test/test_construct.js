@@ -274,6 +274,7 @@ module.exports = function () {
             expect(packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+            expect(packet.getPHYPayload()).to.deep.equal(expected_pktBufs.PHYPayload);
         });
 
 

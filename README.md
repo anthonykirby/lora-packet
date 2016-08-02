@@ -34,9 +34,9 @@ them into the uplink.
 
     npm install lora-packet
 
-## Usage
+## Usage (packet decoding from wire):
 
-### fromWire(data)
+### fromWire(buffer)
 
 Parse & create packet structure from wire-format buffer (i.e. "radio PHYPayload")
 
@@ -88,8 +88,38 @@ calculates the MIC & updates the packet (no return value)
 
 ### decrypt(packet, AppSKey, NwkSKey)
 
-decrypts and returns the payload (NB the correct key is chosed depending on 
+decrypts and returns the payload (NB the relevant key is chosen depending on 
 the value of *FPort*)
+
+
+## Usage (packet encoding to wire):
+
+### fromFields(data)
+
+takes an object with properties representing fields in the packet - see example below 
+- and generates a valid packet from them.   If a NwkSKey is provided then the
+MIC is calculated (otherwise = "EEEEEEEE") and if the relevant encryption key
+(AppSKey or NwkSKey depending on port) then the payload is encrypted.
+ 
+The wire-format payload can be obtained by calling *getPHYPayload()* 
+(or *getBuffers().PHYPayload*)
+ 
+#### Required fields:
+
+* *MType* - supplied as number (0-7 or constants) or string
+* *DevAddr* - supplied as Buffer (4)
+* *FCnt* - supplied as number or Buffer(2)
+
+#### Optional fields:
+
+* *FCtrl.ADR* - boolean (default = false)
+* *FCtrl.ADRACKReq* - boolean (default = false)
+* *FCtrl.ACK* - boolean (default = false)
+* *FCtrl.FPending* - boolean (default = false)
+* *FPort* - number (default = 1)
+
+
+
 
 
 ## Example:
@@ -144,6 +174,8 @@ var constructedPacket = lora_packet.fromFields({
     , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex') // NwkSKey
 );
 console.log("constructedPacket.toString()=\n" + constructedPacket);
+var wireFormatPacket = constructedPacket.getPHYPayload();
+console.log("wireFormatPacket.toString()=\n" + wireFormatPacket.toString('hex'));
 ```
 
 ## Notes:
@@ -153,16 +185,40 @@ console.log("constructedPacket.toString()=\n" + constructedPacket);
 * LoRa sends data over the wire in little-endian format
 (see spec #1.2 "The octet order for all multi-­octet fields is little endian")
 * lora-packet attempts to hide this from you, so e.g. DevAddr & FCnt are 
-presented in big-endian format.  For example, DevAddr=49be7df1 is sent over 
-the wire as 0xf1, 0x7d, 0xbe, 0x49.
+presented in big-endian format.  
+* For example, DevAddr=49be7df1 is sent over the wire as 0xf1, 0x7d, 0xbe, 0x49.
+* Similarly, the fields in the Join Request message (AppEUI, DevEUI, DevNonce) 
+are reversed on the wire
 
 
-### Can I help?
+#### Can I help?
 
 * I've done some testing, but of course I can only test using the packets 
 that I can generate & receive with the radios I've got, and packets I've 
-generated myself.  If you find a packet that `lora-packet` fails to parse, 
-or incorrectly decodes any packet, please let me know!
+constructed myself.  If you find a packet that `lora-packet` fails to parse, 
+or incorrectly decodes / decrypts etc, please let me know!
 
+#### LoRaWAN - naming clarification
 
-s
+It took me longer than expected to understand the various IDs & key names. 
+Different terminology is used by LoRaWAN / TTN / Multitech, & there's both 
+ OTA & manual personalisation options.  This is a quick summary which I hope 
+ you'll find helpful.
+  
+(TODO!)
+
+(TODO: link to blog article when published)
+
+#### Version history
+
+* 0.4.0 implemented creation of packet (+ MIC + encryption) from payload / fields
+* 0.3.0 refactor to allow packet creation 
+* 0.2.0 initial release as npm
+
+#### TODO
+
+* Support code for Over-the-Air Activation (OTAA), i.e. code that handles 
+the *Join Request* message, negotiating the handshake & helping to genererate 
+a *Join Accept* message.
+ 
+* MAC Commands, as sent in *FOpts* (or piggybacked in *FRMPayload*)

@@ -49,3 +49,5 @@ var constructedPacket = lora_packet.fromFields({
     , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex') // NwkSKey
 );
 console.log("constructedPacket.toString()=\n" + constructedPacket);
+var wireFormatPacket = constructedPacket.getPHYPayload();
+console.log("wireFormatPacket.toString()=\n" + wireFormatPacket.toString('hex'));

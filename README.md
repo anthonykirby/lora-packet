@@ -28,7 +28,7 @@ them into the uplink.
 * MIC (Message Integrity Check) checking
 * payload decryption
 * decodes uplink & downlink packets, network join etc
-* ability to create LoRa format packets (TODO)
+* ability to create LoRa format packets
 
 ## Installation
 

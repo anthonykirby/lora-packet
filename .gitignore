@@ -2,3 +2,4 @@ README.html
 .idea
 node_modules
 demo*.js
+npm-debug.log

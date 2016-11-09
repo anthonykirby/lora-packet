@@ -3,7 +3,9 @@
 A pure [node.js](http://nodejs.org/) library to decode and encode packets 
 for LoRa/LoRaWAN<sup>TM</sup> radio communication, based on the specification 
 from the [LoRa Alliance](https://www.lora-alliance.org/) (based on V1.0.1 
-Draft 3), and as used by [The Things Network](https://www.thethingsnetwork.org/)
+Draft 3), and as used by [The Things Network](https://www.thethingsnetwork.org/).  
+
+Packet decoding is also wrapped in a simple command-line tool that accepts input in hex and base-64
 
 
 ## Why?
@@ -33,6 +35,11 @@ them into the uplink.
 ## Installation
 
     npm install lora-packet
+
+## Usage (command-line packet decoding):
+
+    bin/lora-packet-decode --hex 40F17DBE4900020001954378762B11FF0D
+    bin/lora-packet-decode --base64 QPF9vkkAAgABlUN4disR/w0=
 
 ## Usage (packet decoding from wire):
 

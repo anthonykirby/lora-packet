@@ -218,6 +218,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.5.0 add command-line tool
 * 0.4.0 implemented creation of packet (+ MIC + encryption) from payload / fields
 * 0.3.0 refactor to allow packet creation 
 * 0.2.0 initial release as npm
@@ -229,3 +230,8 @@ the *Join Request* message, negotiating the handshake & helping to genererate
 a *Join Accept* message.
  
 * MAC Commands, as sent in *FOpts* (or piggybacked in *FRMPayload*)
+
+#### Credits
+
+Thank you to [David Olivari](https://github.com/davidonet)
+

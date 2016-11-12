@@ -52,6 +52,10 @@ module.exports = function () {
             expect (packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
 
@@ -78,6 +82,10 @@ module.exports = function () {
             expect (packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
         it('should create packet with MType as string', function () {
@@ -103,6 +111,10 @@ module.exports = function () {
             expect (packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
 
@@ -130,6 +142,10 @@ module.exports = function () {
             expect (packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
 
@@ -156,6 +172,10 @@ module.exports = function () {
             expect (packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
 
@@ -246,6 +266,10 @@ module.exports = function () {
             expect(packet).not.to.be.null;
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
         it('should encrypt if keys provided', function () {
@@ -275,6 +299,10 @@ module.exports = function () {
             expect(packet.getBuffers()).to.not.be.undefined;
             expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
             expect(packet.getPHYPayload()).to.deep.equal(expected_pktBufs.PHYPayload);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
 

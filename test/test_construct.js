@@ -255,6 +255,7 @@ module.exports = function () {
                 });
             expect(packet.getBuffers().FCtrl).to.deep.equal(new Buffer('F0','hex'));
             expect(packet.getFCtrlADR()).to.equal(true);
+            expect(packet.getFCtrlADRACKReq()).to.equal(true);
             expect(packet.getFCtrlACK()).to.equal(true);
             expect(packet.getFCtrlFPending()).to.equal(true);
         });

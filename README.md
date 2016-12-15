@@ -79,6 +79,9 @@ returns the flag (*ACK*) of field *FCtrl* as a boolean
 
 returns the flag (*ADR*) of field *FCtrl* as a boolean
 
+### packet.getFCtrl.ADRACKReq()
+
+returns the flag (*ADRACKReq*) of field *FCtrl* as a boolean
 
 ### verifyMIC(packet, NwkSKey)
 

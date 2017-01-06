@@ -29,6 +29,7 @@ if (hexOption != -1 && hexOption+1 <  cmdlineArgs.length) {
     console.log ("Usage:");
     console.log ("\tlora-packet-decode --hex <data>");
     console.log ("\tlora-packet-decode --base64 <data>");
+    process.exit(1);
 }
 
 var packet = lora_packet.fromWire(inputData);

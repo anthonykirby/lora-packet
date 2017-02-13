@@ -58,6 +58,35 @@ module.exports = function () {
             expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
 
+        it('should omit FPort if no FRMPayload & no FPort supplied', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    payload:'',
+                    DevAddr: new Buffer('a1b2c3d4', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('40d4c3b2a1000100eeeeeeee', 'hex'),
+                MHDR: new Buffer('40', 'hex'),
+                MACPayload: new Buffer('d4c3b2a1000100', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                FOpts: new Buffer(0),
+                FCtrl: new Buffer('00', 'hex'),
+                FHDR: new Buffer('d4c3b2a1000100', 'hex'),
+                DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                FCnt: new Buffer('0001', 'hex'),
+                // TODO FPort is omitted!
+                FPort: new Buffer(0),
+                FRMPayload: new Buffer('')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
 
         it('should create packet with MType as integer', function () {
             var packet = lora_packet.fromFields(

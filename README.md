@@ -69,7 +69,7 @@ returns the frame count (*FCnt*) as a number
 
 ### packet.getFPort()
 
-returns the port (*FPort*) as a number
+returns the port (*FPort*) as a number (or null if FPort is absent)
 
 ### packet.getFCtrl.ACK()
 
@@ -221,6 +221,10 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.6.0 when creating a packet from fields, if no FPort and no payload are specified, omit FPort
+* 0.5.4 command-line behaves gracefully on no input
+* 0.5.3 MIC for join messages; getter for FCtrl.ADRACKReq
+* 0.5.2 fix FOpts parsing
 * 0.5.0 add command-line tool
 * 0.4.0 implemented creation of packet (+ MIC + encryption) from payload / fields
 * 0.3.0 refactor to allow packet creation 
@@ -236,5 +240,6 @@ a *Join Accept* message.
 
 #### Credits
 
-Thank you to [David Olivari](https://github.com/davidonet)
+* Thank you to [David Olivari](https://github.com/davidonet)
+* Thank you to [Larko](https://github.com/larkolab)
 

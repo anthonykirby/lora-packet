@@ -217,8 +217,6 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
   
 (TODO!)
 
-(TODO: link to blog article when published)
-
 #### Version history
 
 * 0.7.0 add support for join packets and OTAA handshaking
@@ -239,5 +237,5 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 * Thank you to [David Olivari](https://github.com/davidonet)
 * Thank you to [Larko](https://github.com/larkolab)
-* Thank you to [tommas-factorylab](https://github.com/tommas-factorylab)
+* Thank you to [Tommas Bakker](https://github.com/tommas-factorylab)
 

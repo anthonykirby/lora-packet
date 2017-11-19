@@ -38,6 +38,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10001000174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -66,6 +67,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a1000100eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a1000100eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('d4c3b2a1000100', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -97,6 +99,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('A0d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10001000174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('A0', 'hex'),
                 MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -126,6 +129,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('80d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10001000174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('80', 'hex'),
                 MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -157,6 +161,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a10034120174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10034120174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('d4c3b2a10034120174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -187,6 +192,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a10034120174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10034120174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('d4c3b2a10034120174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -217,6 +223,7 @@ module.exports = function () {
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a1040100F0F1F2F30174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a1040100F0F1F2F30174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('d4c3b2a1040100F0F1F2F30174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
@@ -289,6 +296,125 @@ module.exports = function () {
             expect(packet.getFCtrlFPending()).to.equal(true);
         });
 
+
+        it('should create join request packet', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    AppEUI: new Buffer('AABBCCDDAABBCCDD', 'hex'),
+                    DevEUI: new Buffer('AABBCCDDAABBCCDD', 'hex'),
+                    DevNonce: new Buffer('AABB', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('00DDCCBBAADDCCBBAADDCCBBAADDCCBBAABBAAeeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('DDCCBBAADDCCBBAADDCCBBAADDCCBBAABBAAeeeeeeee', 'hex'),
+                MHDR: new Buffer('00', 'hex'),
+                MACPayload: new Buffer('DDCCBBAADDCCBBAADDCCBBAADDCCBBAABBAA', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                AppEUI: new Buffer('AABBCCDDAABBCCDD', 'hex'),
+                DevEUI: new Buffer('AABBCCDDAABBCCDD', 'hex'),
+                DevNonce: new Buffer('AABB', 'hex')
+            };
+            expect(packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+        it('should create join accept packet with minimal input', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    AppNonce: new Buffer('AABBCC', 'hex'),
+                    NetID: new Buffer('AABBCC', 'hex'),
+                    DevAddr: new Buffer('AABBCCDD', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('20CCBBAACCBBAADDCCBBAA0000eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('CCBBAACCBBAADDCCBBAA0000eeeeeeee', 'hex'),
+                MHDR: new Buffer('20', 'hex'),
+                MACPayload: new Buffer('CCBBAACCBBAADDCCBBAA0000', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                AppNonce: new Buffer('AABBCC', 'hex'),
+                NetID: new Buffer('AABBCC', 'hex'),
+                DevAddr: new Buffer('AABBCCDD', 'hex'),
+                DLSettings: new Buffer('00', 'hex'),
+                RxDelay: new Buffer('00', 'hex'),
+                CFList: new Buffer(0)
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+        it('should create join accept packet', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    AppNonce: new Buffer('AABBCC', 'hex'),
+                    NetID: new Buffer('AABBCC', 'hex'),
+                    DevAddr: new Buffer('AABBCCDD', 'hex'),
+                    DLSettings: new Buffer('12', 'hex'),
+                    RxDelay: new Buffer('0F', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('20CCBBAACCBBAADDCCBBAA120Feeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('CCBBAACCBBAADDCCBBAA120Feeeeeeee', 'hex'),
+                MHDR: new Buffer('20', 'hex'),
+                MACPayload: new Buffer('CCBBAACCBBAADDCCBBAA120F', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                AppNonce: new Buffer('AABBCC', 'hex'),
+                NetID: new Buffer('AABBCC', 'hex'),
+                DevAddr: new Buffer('AABBCCDD', 'hex'),
+                DLSettings: new Buffer('12', 'hex'),
+                RxDelay: new Buffer('0F', 'hex'),
+                CFList: new Buffer(0)
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
+        it('should create join accept packet with CFList', function () {
+            var packet = lora_packet.fromFields(
+                {
+                    AppNonce: new Buffer('AABBCC', 'hex'),
+                    NetID: new Buffer('AABBCC', 'hex'),
+                    DevAddr: new Buffer('AABBCCDD', 'hex'),
+                    DLSettings: new Buffer('12', 'hex'),
+                    RxDelay: new Buffer('0F', 'hex'),
+                    CFList: new Buffer('11223311223311223311223311223300', 'hex')
+                });
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('20CCBBAACCBBAADDCCBBAA120F11223311223311223311223311223300eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('CCBBAACCBBAADDCCBBAA120F11223311223311223311223311223300eeeeeeee', 'hex'),
+                MHDR: new Buffer('20', 'hex'),
+                MACPayload: new Buffer('CCBBAACCBBAADDCCBBAA120F11223311223311223311223311223300', 'hex'),
+                MIC: new Buffer('EEEEEEEE', 'hex'),
+                AppNonce: new Buffer('AABBCC', 'hex'),
+                NetID: new Buffer('AABBCC', 'hex'),
+                DevAddr: new Buffer('AABBCCDD', 'hex'),
+                DLSettings: new Buffer('12', 'hex'),
+                RxDelay: new Buffer('0F', 'hex'),
+                CFList: new Buffer('11223311223311223311223311223300', 'hex')
+            };
+            expect (packet).not.to.be.null;
+            expect(packet.getBuffers()).to.not.be.undefined;
+            expect(packet.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // re-parse to cross-check
+            var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+        });
+
         it('should create packet with correct FPort', function () {
             var packet = lora_packet.fromFields(
                 {
@@ -300,18 +426,19 @@ module.exports = function () {
         });
 
 
-        it('should calculate MIC if NwkSKey provided', function () {
+        it('should calculate MIC if keys provided', function () {
             var packet = lora_packet.fromFields(
                 {
-                    payload: new Buffer('95437876', 'hex'),
+                    payload: 'test',
                     DevAddr: new Buffer('49be7df1', 'hex'),
                     FCnt: new Buffer('0002', 'hex')
                 }
-                , null  // AppSKey
-                , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex')
+                , new Buffer("ec925802ae430ca77fd3dd73cb2cc588", 'hex') // AppSKey
+                , new Buffer("44024241ed4ce9a68c6a8bc055233fd3", 'hex') // NwkSKey
             );
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40f17dbe4900020001954378762b11ff0d', 'hex'),
+                MACPayloadWithMIC: new Buffer('f17dbe4900020001954378762b11ff0d', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('f17dbe490002000195437876', 'hex'),
                 MIC: new Buffer('2b11ff0d', 'hex'),
@@ -344,6 +471,7 @@ module.exports = function () {
             );
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40f17dbe4900020001954378762b11ff0d', 'hex'),
+                MACPayloadWithMIC: new Buffer('f17dbe4900020001954378762b11ff0d', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
                 MACPayload: new Buffer('f17dbe490002000195437876', 'hex'),
                 MIC: new Buffer('2b11ff0d', 'hex'),
@@ -364,7 +492,6 @@ module.exports = function () {
             var parsed = lora_packet.fromWire(expected_pktBufs.PHYPayload);
             expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
         });
-
 
     });
 };

@@ -38,7 +38,7 @@
   "license": "MIT",
   "devDependencies": {
     "js-base64": "^2.3.2",
-    "mocha": "^4.0.1",
+    "mocha": "^2.5.3",
     "chai": "^4.1.2"
   }
 }

@@ -5,4 +5,5 @@ describe("unit tests", function () {
     require('./test_construct.js')();
     require('./test_mic.js')();
     require('./test_decrypt.js')();
+    require('./test_keygen.js')();
 });

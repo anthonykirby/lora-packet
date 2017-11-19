@@ -221,6 +221,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.0 add support for join packets and OTAA handshaking
 * 0.6.0 when creating a packet from fields, if no FPort and no payload are specified, omit FPort
 * 0.5.4 command-line behaves gracefully on no input
 * 0.5.3 MIC for join messages; getter for FCtrl.ADRACKReq
@@ -232,14 +233,11 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### TODO
 
-* Support code for Over-the-Air Activation (OTAA), i.e. code that handles 
-the *Join Request* message, negotiating the handshake & helping to genererate 
-a *Join Accept* message.
- 
 * MAC Commands, as sent in *FOpts* (or piggybacked in *FRMPayload*)
 
 #### Credits
 
 * Thank you to [David Olivari](https://github.com/davidonet)
 * Thank you to [Larko](https://github.com/larkolab)
+* Thank you to [tommas-factorylab](https://github.com/tommas-factorylab)
 

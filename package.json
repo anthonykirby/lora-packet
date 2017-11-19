@@ -32,13 +32,13 @@
     "test": "test"
   },
   "dependencies": {
-    "crypto-js": "^3.1.6",
+    "crypto-js": "^3.1.9-1",
     "node-aes-cmac": "^0.1.1"
   },
   "license": "MIT",
   "devDependencies": {
-    "js-base64": "^2.1.9",
-    "mocha": "^2.5.3",
-    "chai": "^3.5.0"
+    "js-base64": "^2.3.2",
+    "mocha": "^4.0.1",
+    "chai": "^4.1.2"
   }
 }

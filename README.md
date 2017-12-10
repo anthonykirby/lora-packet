@@ -87,24 +87,30 @@ returns the flag (*ADR*) of field *FCtrl* as a boolean
 
 returns the flag (*ADRACKReq*) of field *FCtrl* as a boolean
 
-### verifyMIC(packet, NwkSKey, AppKey)
+### verifyMIC(packet, NwkSKey [, AppKey] [, FCntMSBytes])
 
 returns a boolean; true if the MIC is correct (i.e. the value at the end of 
 the packet data matches the calculation over the packet contents)
 
 NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
 
-### calculateMIC(packet, NwkSKey, AppKey)
+Optionally, if using 32-byt FCnts, supply the upper 2 bytes as a Buffer.
+
+### calculateMIC(packet, NwkSKey [, AppKey] [, FCntMSBytes])
 
 returns the MIC, as a buffer
 
 NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
 
-### recalculateMIC(packet, NwkSKey, AppKey)
+Optionally, if using 32-byt FCnts, supply the upper 2 bytes as a Buffer.
+
+### recalculateMIC(packet, NwkSKey [, AppKey] [, FCntMSBytes])
 
 calculates the MIC & updates the packet (no return value)
 
 NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
+
+Optionally, if using 32-byt FCnts, supply the upper 2 bytes as a Buffer.
 
 ### decrypt(packet, AppSKey, NwkSKey)
 

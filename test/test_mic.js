@@ -119,6 +119,19 @@ module.exports = function () {
             expect(lora_packet.verifyMIC(packet, null, new Buffer(AppKey_hex, 'hex'))).to.equal(false);
         });
 
+        it('should calculate & verify MIC when 32-bit FCnts are used', function () {
+            var message_hex = "40F17DBE4900020001954378762B11FF0D";
+            var packet = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
+
+            var NwkSKey_hex = "44024241ed4ce9a68c6a8bc055233fd3";
+            var calculatedMIC = lora_packet.calculateMIC(packet, new Buffer(NwkSKey_hex, 'hex'), null, new Buffer('0000', 'hex'));
+            expect(calculatedMIC.toString('hex')).to.equal('2b11ff0d');
+
+            expect(lora_packet.verifyMIC(packet, new Buffer(NwkSKey_hex, 'hex'), null, new Buffer('0000', 'hex'))).to.equal(true);
+        });
+
+
+
     });
 };
 

@@ -240,6 +240,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.4 add support for 32-bit FCnt in MIC calculation
 * 0.7.2 fix Join Accept parsing
 * 0.7.0 add support for join packets and OTAA handshaking
 * 0.6.0 when creating a packet from fields, if no FPort and no payload are specified, omit FPort

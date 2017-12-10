@@ -26,7 +26,8 @@ console.log("calculated MIC=" + lora_packet.calculateMIC(packet, NwkSKey).toStri
 
 // decrypt payload
 var AppSKey = new Buffer('ec925802ae430ca77fd3dd73cb2cc588', 'hex');
-console.log("Decrypted='" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString() + "'");
+console.log("Decrypted (ASCII)='" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString() + "'");
+console.log("Decrypted (hex)='0x" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString('hex') + "'");
 
 
 //-----------------

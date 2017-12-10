@@ -114,7 +114,9 @@ Optionally, if using 32-byt FCnts, supply the upper 2 bytes as a Buffer.
 
 ### decrypt(packet, AppSKey, NwkSKey)
 
-decrypts and returns the payload 
+decrypts and returns the payload as a buffer:
+The library cannot know whether this is an ASCII string or binary data, 
+so you will need to interpret it appropriately.
 
 NB the relevant key is chosen depending on the value of *FPort*,
 and NB key order is different than MIC APIs
@@ -154,37 +156,38 @@ The wire-format payload can be obtained by calling *getPHYPayload()*
 
 ```javascript
 var lora_packet = require('lora-packet');
-
+  
 //-----------------
 // packet decoding
-
+  
 // decode a packet
 var packet = lora_packet.fromWire(new Buffer('40F17DBE4900020001954378762B11FF0D', 'hex'));
-
+  
 // debug: prints out contents
 // - contents depend on packet type
 // - contents are named based on LoRa spec
 console.log("packet.toString()=\n" + packet);
-
+  
 // e.g. retrieve payload elements
 console.log("packet MIC=" + packet.getBuffers().MIC.toString('hex'));
 console.log("FRMPayload=" + packet.getBuffers().FRMPayload.toString('hex'));
-
+  
 // check MIC
 var NwkSKey = new Buffer('44024241ed4ce9a68c6a8bc055233fd3', 'hex');
 console.log("MIC check=" + (lora_packet.verifyMIC(packet, NwkSKey) ? "OK" : "fail"));
-
+  
 // calculate MIC based on contents
 console.log("calculated MIC=" + lora_packet.calculateMIC(packet, NwkSKey).toString('hex'));
-
+  
 // decrypt payload
 var AppSKey = new Buffer('ec925802ae430ca77fd3dd73cb2cc588', 'hex');
-console.log("Decrypted='" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString() + "'");
-
-
+console.log("Decrypted (ASCII)='" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString() + "'");
+console.log("Decrypted (hex)='0x" + lora_packet.decrypt(packet, AppSKey, NwkSKey).toString('hex') + "'");
+  
+  
 //-----------------
 // packet creation
-
+  
 // create a packet
 var constructedPacket = lora_packet.fromFields({
         MType: 'Unconfirmed Data Up',   // (default)

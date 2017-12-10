@@ -199,5 +199,36 @@ module.exports = function () {
             expect(constants.MTYPE_CONFIRMED_DATA_DOWN).to.equal(5);
         });
 
+        it('should Join Accept', function () {
+            var message_hex = "33105EAFD15E04A62872C97F821955A1B75420F0FFCC20CF999347E18AA8A235";
+
+            var expected_pktBufs = {
+                PHYPayload: new Buffer('33105EAFD15E04A62872C97F821955A1B75420F0FFCC20CF999347E18AA8A235', 'hex'),
+                MACPayloadWithMIC: new Buffer('105EAFD15E04A62872C97F821955A1B75420F0FFCC20CF999347E18AA8A235', 'hex'),
+                MHDR: new Buffer('33', 'hex'),
+                MACPayload: new Buffer('105EAFD15E04A62872C97F821955A1B75420F0FFCC20CF999347E1', 'hex'),
+                MIC: new Buffer('8AA8A235', 'hex'),
+                AppNonce: new Buffer('AF5E10', 'hex'),
+                NetID: new Buffer('045ED1', 'hex'),
+                DevAddr: new Buffer('C97228A6', 'hex'),
+                DLSettings: new Buffer('7F', 'hex'),
+                RxDelay: new Buffer('82', 'hex'),
+                CFList: new Buffer(''),
+            };
+
+            var parsed = lora_packet.fromWire(new Buffer(message_hex, 'hex'));
+
+            expect(parsed).to.not.be.undefined;
+            expect(parsed.getBuffers()).to.not.be.undefined;
+            expect(parsed.getBuffers()).to.deep.equal(expected_pktBufs);
+
+            // non-buffer output
+            expect(parsed.getMType()).to.equal('Join Accept');
+            expect(parsed.getDir()).to.equal(null);
+            expect(parsed.getDLSettingsRxOneDRoffset()).to.equal(7);
+            expect(parsed.getDLSettingsRxTwoDataRate()).to.equal(0);
+            expect(parsed.getRxDelayDel()).to.equal(2);
+        });
+
     });
 };

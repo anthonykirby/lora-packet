@@ -224,7 +224,7 @@ module.exports = function () {
 
             // non-buffer output
             expect(parsed.getMType()).to.equal('Join Accept');
-            expect(parsed.getDir()).to.equal(null);
+            expect(parsed.getDir()).to.equal('down');
             expect(parsed.getDLSettingsRxOneDRoffset()).to.equal(7);
             expect(parsed.getDLSettingsRxTwoDataRate()).to.equal(0);
             expect(parsed.getRxDelayDel()).to.equal(2);

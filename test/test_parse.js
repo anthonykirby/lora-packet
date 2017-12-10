@@ -229,6 +229,7 @@ module.exports = function () {
             expect(parsed.getDLSettingsRxOneDRoffset()).to.equal(7);
             expect(parsed.getDLSettingsRxTwoDataRate()).to.equal(0);
             expect(parsed.getRxDelayDel()).to.equal(2);
+            expect(parsed.getFCnt()).to.equal(null);
         });
 
     });

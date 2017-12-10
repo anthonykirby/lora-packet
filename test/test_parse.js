@@ -39,6 +39,7 @@ module.exports = function () {
             expect(parsed.getFCnt()).to.equal(2);
             expect(parsed.getFCtrlACK()).to.equal(false);
             expect(parsed.getFCtrlADR()).to.equal(false);
+            expect(parsed.getFPort()).to.equal(1);
         });
 
         it('should parse join request packet', function () {

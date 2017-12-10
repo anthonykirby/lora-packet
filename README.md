@@ -87,23 +87,31 @@ returns the flag (*ADR*) of field *FCtrl* as a boolean
 
 returns the flag (*ADRACKReq*) of field *FCtrl* as a boolean
 
-### verifyMIC(packet, NwkSKey)
+### verifyMIC(packet, NwkSKey, AppKey)
 
 returns a boolean; true if the MIC is correct (i.e. the value at the end of 
 the packet data matches the calculation over the packet contents)
 
-### calculateMIC(packet, NwkSKey)
+NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
+
+### calculateMIC(packet, NwkSKey, AppKey)
 
 returns the MIC, as a buffer
 
-### recalculateMIC(packet, NwkSKey)
+NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
+
+### recalculateMIC(packet, NwkSKey, AppKey)
 
 calculates the MIC & updates the packet (no return value)
 
+NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
+
 ### decrypt(packet, AppSKey, NwkSKey)
 
-decrypts and returns the payload (NB the relevant key is chosen depending on 
-the value of *FPort*)
+decrypts and returns the payload 
+
+NB the relevant key is chosen depending on the value of *FPort*,
+and NB key order is different than MIC APIs
 
 
 ## Usage (packet encoding to wire):

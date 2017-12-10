@@ -7,7 +7,6 @@ Draft 3), and as used by [The Things Network](https://www.thethingsnetwork.org/)
 
 Packet decoding is also wrapped in a simple command-line tool that accepts input in hex and base-64
 
-
 ## Why?
 
 * LoRa packets are encrypted at the radio link level.  They could be 
@@ -23,6 +22,11 @@ run on)- a single library can be used in both places / either place
 telemetry/monitoring using the same uplink channel as used by the radio, as 
 LoRa packets - so you encode your gateway telemetry as LoRa packets & slip 
 them into the uplink.
+
+## Help me to help you:  Give me data!  
+
+I'm happy to fix or add functionality, but I can only do this if I have 
+example packets.  
 
 ## Features:
 

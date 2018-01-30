@@ -252,6 +252,8 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * 0.3.0 refactor to allow packet creation 
 * 0.2.0 initial release as npm
 
+[Travi CI builds](https://travis-ci.org/anthonykirby/lora-packet)
+
 #### TODO
 
 * MAC Commands, as sent in *FOpts* (or piggybacked in *FRMPayload*)
@@ -262,4 +264,5 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * Thank you to [Larko](https://github.com/larkolab)
 * Thank you to [Tommas Bakker](https://github.com/tommas-factorylab)
 * Thank you to [Rob Gillan](https://github.com/rgillan)
+* Thank you to [Christopher Hunt](https://github.com/huntc)
 

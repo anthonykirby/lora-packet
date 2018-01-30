@@ -227,7 +227,7 @@ module.exports = function () {
             expect(parsed.getMType()).to.equal('Join Accept');
             expect(parsed.getDir()).to.equal('down');
             expect(parsed.getDLSettingsRxOneDRoffset()).to.equal(7);
-            expect(parsed.getDLSettingsRxTwoDataRate()).to.equal(0);
+            expect(parsed.getDLSettingsRxTwoDataRate()).to.equal(15);
             expect(parsed.getRxDelayDel()).to.equal(2);
             expect(parsed.getFCnt()).to.equal(null);
         });

@@ -7,4 +7,5 @@ describe("unit tests", function () {
     require('./test_decrypt.js')();
     require('./test_keygen.js')();
     require('./test_github_issue17.js')();
+    require('./test_fopts.js')();
 });

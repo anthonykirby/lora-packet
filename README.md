@@ -2,8 +2,7 @@
 
 A pure [node.js](http://nodejs.org/) library to decode and encode packets 
 for LoRa/LoRaWAN<sup>TM</sup> radio communication, based on the specification 
-from the [LoRa Alliance](https://www.lora-alliance.org/) (based on V1.0.1 
-Final), and as used by [The Things Network](https://www.thethingsnetwork.org/).  
+from the [LoRa Alliance](https://www.lora-alliance.org/) (based on V1.0.2 final), and as used by [The Things Network](https://www.thethingsnetwork.org/).  
 
 Packet decoding is also wrapped in a simple command-line tool that accepts input in hex and base-64
 

@@ -44,15 +44,20 @@ if (nwkOption >= 0 && appOption >= 0) {
   var appKey = Buffer.from(cmdlineArgs[appOption+1], 'hex')
   var micOk = lora_packet.verifyMIC(packet, nwkKey) ? " (OK)"
               : (" (BAD != "+asHexString(lora_packet.calculateMIC(packet, nwkKey))+")");
-  var plaintext = lora_packet.decrypt(packet, appKey, nwkKey);
+  var plaintext = asHexString(lora_packet.decrypt(packet, appKey, nwkKey));
   res = res.replace(/  MIC = [0-9a-fA-F]+/, '$&'+micOk);
   res = res.replace(/  FRMPayload = [0-9a-fA-F]+/, '$&\n'+
-                    "                         "+asHexString(plaintext)+" (plaintext)");
-  //console.log("              MicCheck ="+micOk);
-  //console.log("            FRMPayload = "+asHexString(plaintext)+" (plaintext)")
+                    "             Plaintext = "+plaintext+" ('"+asAscii(plaintext)+"')");
 }
 console.log (res);
 
 function asHexString(buf) {
     return buf.toString('hex').toUpperCase();
+}
+
+function asAscii(hex) {
+    return hex.replace(/../g, function(x) {
+      var code = parseInt(x, 16);
+      return code >= 32 && code < 127 ? String.fromCharCode(code) : ".";
+    });
 }

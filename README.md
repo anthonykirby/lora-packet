@@ -41,8 +41,20 @@ example packets.
 
 ## Usage (command-line packet decoding):
 
-    bin/lora-packet-decode --hex 40F17DBE4900020001954378762B11FF0D
-    bin/lora-packet-decode --base64 QPF9vkkAAgABlUN4disR/w0=
+```
+$ bin/lora-packet-decode --hex 40F17DBE4900020001954378762B11FF0D
+```
+    
+```
+$ bin/lora-packet-decode --base64 QPF9vkkAAgABlUN4disR/w0=
+```
+    
+```
+$ bin/lora-packet-decode \
+        --appkey ec925802ae430ca77fd3dd73cb2cc588 \
+        --nwkkey 44024241ed4ce9a68c6a8bc055233fd3 \
+        --hex 40F17DBE4900020001954378762B11FF0D 
+```
 
 ## Usage (packet decoding from wire):
 
@@ -239,6 +251,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.5 add command-line support for AppSKey/NwkSKey
 * 0.7.4 add support for 32-bit FCnt in MIC calculation
 * 0.7.2 fix Join Accept parsing
 * 0.7.0 add support for join packets and OTAA handshaking
@@ -265,4 +278,5 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * Thank you to [Rob Gillan](https://github.com/rgillan)
 * Thank you to [Christopher Hunt](https://github.com/huntc)
 * Thank you to [Thibault Ortiz](https://github.com/tortizactility)
+* Thank you to [Flemming Madsen](https://github.com/amplexdenmark)
 

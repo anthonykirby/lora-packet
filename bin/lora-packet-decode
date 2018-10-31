@@ -20,6 +20,17 @@ var b64Option = cmdlineArgs.indexOf("--base64");
 var nwkOption = cmdlineArgs.indexOf("--nwkkey");
 var appOption = cmdlineArgs.indexOf("--appkey");
 
+function printUsageAndExit() {
+    console.log ("Usage:");
+    console.log ("\tlora-packet-decode [--nwkkey <NwkSKey> --appkey <AppSKey>] --{hex|base64} <data>");
+    process.exit(1);
+}
+
+// need both keys (or neither)
+if (nwkOption >= 0 && ! (appOption >= 0) || !(nwkOption >= 0) && appOption >= 0) {
+    printUsageAndExit()
+}
+
 var inputData;
 if (hexOption != -1 && hexOption+1 <  cmdlineArgs.length) {
     var arg = cmdlineArgs[hexOption+1];
@@ -30,9 +41,7 @@ if (hexOption != -1 && hexOption+1 <  cmdlineArgs.length) {
         console.log("decoding from Base64: ", arg);
         inputData = Buffer.from(arg, 'base64');
 } else {
-    console.log ("Usage:");
-    console.log ("\tlora-packet-decode [--nwkkey <NwkSKey> --appkey <AppSKey>] --{hex|base64} <data>");
-    process.exit(1);
+	printUsageAndExit();
 }
 
 var packet = lora_packet.fromWire(inputData);

@@ -251,7 +251,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
-* 0.7.5 add command-line support for AppSKey/NwkSKey
+* 0.7.7 add command-line support for AppSKey/NwkSKey
 * 0.7.4 add support for 32-bit FCnt in MIC calculation
 * 0.7.2 fix Join Accept parsing
 * 0.7.0 add support for join packets and OTAA handshaking

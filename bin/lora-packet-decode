@@ -16,23 +16,48 @@ var cmdlineArgs = process.argv;
 
 var hexOption = cmdlineArgs.indexOf("--hex");
 var b64Option = cmdlineArgs.indexOf("--base64");
+
+var nwkOption = cmdlineArgs.indexOf("--nwkkey");
+var appOption = cmdlineArgs.indexOf("--appkey");
+
 var inputData;
 if (hexOption != -1 && hexOption+1 <  cmdlineArgs.length) {
     var arg = cmdlineArgs[hexOption+1];
     console.log("decoding from Hex: ", arg);
-    inputData = new Buffer(arg, 'hex');
+    inputData = Buffer.from(arg, 'hex');
 } else if (b64Option != -1 && b64Option+1 <  cmdlineArgs.length) {
         var arg = cmdlineArgs[b64Option+1];
         console.log("decoding from Base64: ", arg);
-        inputData = new Buffer(arg, 'base64');
+        inputData = Buffer.from(arg, 'base64');
 } else {
     console.log ("Usage:");
-    console.log ("\tlora-packet-decode --hex <data>");
-    console.log ("\tlora-packet-decode --base64 <data>");
+    console.log ("\tlora-packet-decode [--nwkkey <NwkSKey> --appkey <AppSKey>] --{hex|base64} <data>");
     process.exit(1);
 }
 
 var packet = lora_packet.fromWire(inputData);
 console.log ("Decoded packet")
 console.log ("--------------")
-console.log (packet.toString());
+var res = packet.toString();
+if (nwkOption >= 0 && appOption >= 0) {
+  var nwkKey = Buffer.from(cmdlineArgs[nwkOption+1], 'hex')
+  var appKey = Buffer.from(cmdlineArgs[appOption+1], 'hex')
+  var micOk = lora_packet.verifyMIC(packet, nwkKey, appKey) ? " (OK)"
+              : (" (BAD != "+asHexString(lora_packet.calculateMIC(packet, nwkKey, appKey))+")");
+  var plaintext = asHexString(lora_packet.decrypt(packet, appKey, nwkKey));
+  res = res.replace(/  MIC = [0-9a-fA-F]+/, '$&'+micOk);
+  res = res.replace(/  FRMPayload = [0-9a-fA-F]+/, '$&\n'+
+                    "             Plaintext = "+plaintext+" ('"+asAscii(plaintext)+"')");
+}
+console.log (res);
+
+function asHexString(buf) {
+    return buf.toString('hex').toUpperCase();
+}
+
+function asAscii(hex) {
+    return hex.replace(/../g, function(x) {
+      var code = parseInt(x, 16);
+      return code >= 32 && code < 127 ? String.fromCharCode(code) : ".";
+    });
+}

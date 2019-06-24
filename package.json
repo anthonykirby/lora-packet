@@ -1,7 +1,10 @@
 {
   "name": "lora-packet",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "author": "Anthony Kirby",
+  "contributors" : [
+    "Giorgio Pillon"
+  ],
   "description": "LoRa packet decoder/encoder",
   "keywords": [
     "lora",
@@ -23,10 +26,10 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha -g unit"
   },
-  "bin":  {
+  "bin": {
     "lora-packet-decode": "./bin/lora-packet-decode"
   },
-  "license": "",
+  "license": "MIT",
   "directories": {
     "lib": "lib",
     "test": "test"
@@ -35,7 +38,6 @@
     "crypto-js": "^3.1.9-1",
     "node-aes-cmac": "^0.1.1"
   },
-  "license": "MIT",
   "devDependencies": {
     "js-base64": "^2.3.2",
     "mocha": "^2.5.3",

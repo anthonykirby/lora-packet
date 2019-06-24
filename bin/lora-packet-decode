@@ -20,53 +20,57 @@ var b64Option = cmdlineArgs.indexOf("--base64");
 var nwkOption = cmdlineArgs.indexOf("--nwkkey");
 var appOption = cmdlineArgs.indexOf("--appkey");
 
+var fCntMSBOption = cmdlineArgs.indexOf("--cntmsb");
+
 function printUsageAndExit() {
-    console.log ("Usage:");
-    console.log ("\tlora-packet-decode [--nwkkey <NwkSKey> --appkey <AppSKey>] --{hex|base64} <data>");
+    console.log("Usage:");
+    console.log(`\tlora-packet-decode [--nwkkey <NwkSKey> --appkey <AppSKey> --cntmsb <fCntMSB>] --{hex|base64} <data>`);
     process.exit(1);
 }
 
 // need both keys (or neither)
-if (nwkOption >= 0 && ! (appOption >= 0) || !(nwkOption >= 0) && appOption >= 0) {
+if (nwkOption >= 0 && !(appOption >= 0) || !(nwkOption >= 0) && appOption >= 0) {
     printUsageAndExit()
 }
 
 var inputData;
-if (hexOption != -1 && hexOption+1 <  cmdlineArgs.length) {
-    var arg = cmdlineArgs[hexOption+1];
+if (hexOption !== -1 && hexOption + 1 < cmdlineArgs.length) {
+    var arg = cmdlineArgs[hexOption + 1];
     console.log("decoding from Hex: ", arg);
     inputData = Buffer.from(arg, 'hex');
-} else if (b64Option != -1 && b64Option+1 <  cmdlineArgs.length) {
-        var arg = cmdlineArgs[b64Option+1];
-        console.log("decoding from Base64: ", arg);
-        inputData = Buffer.from(arg, 'base64');
+} else if (b64Option !== -1 && b64Option + 1 < cmdlineArgs.length) {
+    var arg = cmdlineArgs[b64Option + 1];
+    console.log("decoding from Base64: ", arg);
+    inputData = Buffer.from(arg, 'base64');
 } else {
-	printUsageAndExit();
+    printUsageAndExit();
 }
 
 var packet = lora_packet.fromWire(inputData);
-console.log ("Decoded packet")
-console.log ("--------------")
+console.log("Decoded packet");
+console.log("--------------");
 var res = packet.toString();
 if (nwkOption >= 0 && appOption >= 0) {
-  var nwkKey = Buffer.from(cmdlineArgs[nwkOption+1], 'hex')
-  var appKey = Buffer.from(cmdlineArgs[appOption+1], 'hex')
-  var micOk = lora_packet.verifyMIC(packet, nwkKey, appKey) ? " (OK)"
-              : (" (BAD != "+asHexString(lora_packet.calculateMIC(packet, nwkKey, appKey))+")");
-  var plaintext = asHexString(lora_packet.decrypt(packet, appKey, nwkKey));
-  res = res.replace(/  MIC = [0-9a-fA-F]+/, '$&'+micOk);
-  res = res.replace(/  FRMPayload = [0-9a-fA-F]+/, '$&\n'+
-                    "             Plaintext = "+plaintext+" ('"+asAscii(plaintext)+"')");
+    var fCntMSBBytes = (fCntMSBOption >= 0) ? [ cmdlineArgs[fCntMSBOption + 1] & 0xff,  cmdlineArgs[fCntMSBOption + 1] & 0xff00] : null; //[0x00, 0x00];
+    if (fCntMSBBytes) var fCntMSB =  new Buffer.from(fCntMSBBytes);
+    var nwkKey = Buffer.from(cmdlineArgs[nwkOption + 1], 'hex');
+    var appKey = Buffer.from(cmdlineArgs[appOption + 1], 'hex');
+    var micOk = lora_packet.verifyMIC(packet, nwkKey, appKey, fCntMSB) ? " (OK)"
+        : (" (BAD != " + asHexString(lora_packet.calculateMIC(packet, nwkKey, appKey, fCntMSB)) + ")");
+    var plaintext = asHexString(lora_packet.decrypt(packet, appKey, nwkKey, fCntMSB));
+    res = res.replace(/  MIC = [0-9a-fA-F]+/, '$&' + micOk);
+    res = res.replace(/  FRMPayload = [0-9a-fA-F]+/, '$&\n' +
+        "             Plaintext = " + plaintext + " ('" + asAscii(plaintext) + "')");
 }
-console.log (res);
+console.log(res);
 
 function asHexString(buf) {
     return buf.toString('hex').toUpperCase();
 }
 
 function asAscii(hex) {
-    return hex.replace(/../g, function(x) {
-      var code = parseInt(x, 16);
-      return code >= 32 && code < 127 ? String.fromCharCode(code) : ".";
+    return hex.replace(/../g, function (x) {
+        var code = parseInt(x, 16);
+        return code >= 32 && code < 127 ? String.fromCharCode(code) : ".";
     });
 }

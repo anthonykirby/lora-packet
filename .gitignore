@@ -3,3 +3,4 @@ README.html
 node_modules
 demo*.js
 npm-debug.log
+.package-lock.json

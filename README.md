@@ -139,7 +139,7 @@ Sample
 
 ```javascript
 var packet = lora_packet.fromWire(inputData);
-var DecryptedPacket = lora_packet.fromWire(lora_packet.decryptJoinAccept(inputData, appKey));
+var DecryptedPacket = lora_packet.fromWire(lora_packet.decryptJoinAccept(packet, appKey));
 ```
 
 ## Usage (packet encoding to wire):

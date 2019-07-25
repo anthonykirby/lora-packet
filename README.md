@@ -132,7 +132,7 @@ so you will need to interpret it appropriately.
 NB the relevant key is chosen depending on the value of *FPort*,
 and NB key order is different than MIC APIs
 
-###decryptJoinAccept(inputData, appKey)
+### decryptJoinAccept(inputData, appKey)
 decrypts and returns the Join Accept Message as a buffer:
 
 Sample

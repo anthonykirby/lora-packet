@@ -123,7 +123,7 @@ NB AppKey is used for Join Request/Accept, otherwise NwkSkey is used
 
 Optionally, if using 32-byt FCnts, supply the upper 2 bytes as a Buffer.
 
-### decrypt(packet, AppSKey, NwkSKey)
+### decrypt(packet, AppSKey, NwkSKey [, FCntMSBytes]
 
 decrypts and returns the payload as a buffer:
 The library cannot know whether this is an ASCII string or binary data, 
@@ -132,6 +132,13 @@ so you will need to interpret it appropriately.
 NB the relevant key is chosen depending on the value of *FPort*,
 and NB key order is different than MIC APIs
 
+### decryptJoinAccept(inputData, appKey)
+decrypts and returns the Join Accept Message as a buffer:
+
+```javascript
+var packet = lora_packet.fromWire(inputData);
+var DecryptedPacket = lora_packet.fromWire(lora_packet.decryptJoinAccept(packet, appKey));
+```
 
 ## Usage (packet encoding to wire):
 
@@ -251,6 +258,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.10 add Decrypt Join Accept
 * 0.7.8 improve support for 32-bit FCnt
 * 0.7.7 add command-line support for AppSKey/NwkSKey
 * 0.7.4 add support for 32-bit FCnt in MIC calculation

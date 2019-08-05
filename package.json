@@ -1,6 +1,6 @@
 {
   "name": "lora-packet",
-  "version": "0.7.7",
+  "version": "0.7.8",
   "author": "Anthony Kirby",
   "description": "LoRa packet decoder/encoder",
   "keywords": [
@@ -26,7 +26,6 @@
   "bin":  {
     "lora-packet-decode": "./bin/lora-packet-decode"
   },
-  "license": "",
   "directories": {
     "lib": "lib",
     "test": "test"

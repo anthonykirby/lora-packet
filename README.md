@@ -251,6 +251,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.8 improve support for 32-bit FCnt
 * 0.7.7 add command-line support for AppSKey/NwkSKey
 * 0.7.4 add support for 32-bit FCnt in MIC calculation
 * 0.7.2 fix Join Accept parsing
@@ -271,7 +272,6 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * MAC Commands, as sent in *FOpts* (or piggybacked in *FRMPayload*)
 
 #### Credits
-
 * Thank you to [David Olivari](https://github.com/davidonet)
 * Thank you to [Larko](https://github.com/larkolab)
 * Thank you to [Tommas Bakker](https://github.com/tommas-factorylab)
@@ -279,4 +279,5 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * Thank you to [Christopher Hunt](https://github.com/huntc)
 * Thank you to [Thibault Ortiz](https://github.com/tortizactility)
 * Thank you to [Flemming Madsen](https://github.com/amplexdenmark)
+* Thank you to [Giorgio Pillon](https://github.com/kalik1)
 

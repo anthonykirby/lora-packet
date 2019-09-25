@@ -258,6 +258,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.12 fix CFList byte order
 * 0.7.10 add Decrypt Join Accept
 * 0.7.8 improve support for 32-bit FCnt
 * 0.7.7 add command-line support for AppSKey/NwkSKey

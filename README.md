@@ -258,6 +258,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.14 bump mocha version
 * 0.7.13 fix CFList length
 * 0.7.12 fix CFList byte order
 * 0.7.10 add Decrypt Join Accept

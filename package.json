@@ -1,6 +1,6 @@
 {
   "name": "lora-packet",
-  "version": "0.7.13",
+  "version": "0.7.14",
   "author": "Anthony Kirby",
   "description": "LoRa packet decoder/encoder",
   "keywords": [
@@ -23,7 +23,7 @@
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha -g unit"
   },
-  "bin":  {
+  "bin": {
     "lora-packet-decode": "./bin/lora-packet-decode"
   },
   "directories": {
@@ -37,7 +37,7 @@
   "license": "MIT",
   "devDependencies": {
     "js-base64": "^2.3.2",
-    "mocha": "^2.5.3",
+    "mocha": "^7.0.1",
     "chai": "^4.1.2"
   }
 }

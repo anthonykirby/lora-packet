@@ -37,11 +37,17 @@ example packets.
 
 ## Installation
 
-    (nodejs<=9)
-    npm install lora-packet@~0.7.14
+(nodejs>=10)
 
-    (nodejs>=10)
-    npm install lora-packet
+```bash
+npm install lora-packet
+```
+
+(nodejs<=9)
+
+```bash
+npm install lora-packet@~0.7.14
+```
 
 ## Usage (command-line packet decoding):
 

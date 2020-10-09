@@ -3,3 +3,10 @@ README.html
 node_modules
 demo*.js
 npm-debug.log
+.tern-port
+.vscode
+out/
+.eslintcache
+.npm
+*.tsbuildinfo
+

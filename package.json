@@ -12,6 +12,9 @@
     "encode",
     "decode"
   ],
+  "engines": {
+    "node": ">=10.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/anthonykirby/lora-packet.git"
@@ -19,25 +22,32 @@
   "bugs": {
     "url": "https://github.com/anthonykirby/lora-packet/issues"
   },
-  "main": "lib/index.js",
+  "main": "./out/lib.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -g unit"
+    "build": "./node_modules/.bin/tsc",
+    "test": "./node_modules/.bin/jest",
+    "prepublishOnly": "rm -rf ./out; ./node_modules/.bin/eslint .; ./node_modules/.bin/tsc",
+    "linter": "./node_modules/.bin/eslint ."
   },
   "bin": {
-    "lora-packet-decode": "./bin/lora-packet-decode"
-  },
-  "directories": {
-    "lib": "lib",
-    "test": "test"
+    "lora-packet-decode": "./out/cli.js"
   },
   "dependencies": {
-    "crypto-js": "^3.1.9-1",
-    "node-aes-cmac": "^0.1.1"
+    "crypto-js": "4.0.0",
+    "node-aes-cmac": "0.1.1"
   },
   "license": "MIT",
   "devDependencies": {
-    "js-base64": "^2.3.2",
-    "mocha": "^5.2.0",
-    "chai": "^4.1.2"
+    "@types/crypto-js": "4.0.0",
+    "@types/node": "14.11.8",
+    "@typescript-eslint/eslint-plugin": "4.4.0",
+    "@typescript-eslint/parser": "4.4.0",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.2",
+    "ts-jest": "^26.4.0",
+    "typescript": "^4.0.3"
   }
 }

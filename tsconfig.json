@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./out",
+    "rootDir": "./src",
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "ES2017",
+    "allowJs": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "lib": ["ES2017", "DOM"]
+  },
+  "include": ["src/**/*"]
+}

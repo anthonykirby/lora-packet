@@ -265,6 +265,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.0 upgrade to typescript & node 10.x/12.x/14.x; deprecate pre-10.x
 - 0.7.14 bump mocha version
 - 0.7.13 fix CFList length
 - 0.7.12 fix CFList byte order
@@ -300,3 +301,4 @@ you'll find helpful.
 - Thank you to [Flemming Madsen](https://github.com/amplexdenmark)
 - Thank you to [Giorgio Pillon](https://github.com/kalik1)
 - Thank you to [Nuno Cruz](https://github.com/nunomcruz)
+- Thank you to [Felipe Lima](https://github.com/felipefdl) and the fine folks at [TagoIO](https://tago.io/)

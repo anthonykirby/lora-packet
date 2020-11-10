@@ -49,7 +49,7 @@ function decryptJoin(payload: LoraPacket, AppKey: Buffer): Buffer {
   if (AppKey.length !== 16) throw new Error("Expected a appropriate key with length 16");
 
   const cipherstream = CryptoJS.AES.decrypt(
-    payload.MACPayloadWithMIC.toString("hex"),
+    payload.MACPayloadWithMIC.toString("base64"),
     CryptoJS.enc.Hex.parse(AppKey.toString("hex")),
     {
       mode: CryptoJS.mode.ECB,

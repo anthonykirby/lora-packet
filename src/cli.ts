@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import loraPacket from "./lib";
 
 const cmdlineArgs = process.argv;

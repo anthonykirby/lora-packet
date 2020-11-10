@@ -52,15 +52,15 @@ npm install lora-packet@~0.7.14
 ## Usage (command-line packet decoding):
 
 ```
-$ bin/lora-packet-decode --hex 40F17DBE4900020001954378762B11FF0D
+$ lora-packet-decode --hex 40F17DBE4900020001954378762B11FF0D
 ```
 
 ```
-$ bin/lora-packet-decode --base64 QPF9vkkAAgABlUN4disR/w0=
+$ lora-packet-decode --base64 QPF9vkkAAgABlUN4disR/w0=
 ```
 
 ```
-$ bin/lora-packet-decode \
+$ lora-packet-decode \
         --appkey ec925802ae430ca77fd3dd73cb2cc588 \
         --nwkkey 44024241ed4ce9a68c6a8bc055233fd3 \
         --hex 40F17DBE4900020001954378762B11FF0D
@@ -265,6 +265,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.1 fix shebang
 - 0.8.0 upgrade to typescript & node 10.x/12.x/14.x; deprecate pre-10.x
 - 0.7.14 bump mocha version
 - 0.7.13 fix CFList length

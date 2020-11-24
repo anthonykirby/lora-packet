@@ -8,16 +8,16 @@ describe("construct packet from fields", () => {
     });
 
     const expectedPayload = {
-      PHYPayload: Buffer.from("40d4c3b2a10001000174657374eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a10001000174657374eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("40d4c3b2a10000000174657374eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a10000000174657374eeeeeeee", "hex"),
       MHDR: Buffer.from("40", "hex"),
-      MACPayload: Buffer.from("d4c3b2a10001000174657374", "hex"),
+      MACPayload: Buffer.from("d4c3b2a10000000174657374", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.alloc(0),
       FCtrl: Buffer.from("00", "hex"),
-      FHDR: Buffer.from("d4c3b2a1000100", "hex"),
+      FHDR: Buffer.from("d4c3b2a1000000", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.from("01", "hex"),
       FRMPayload: Buffer.from("test"),
     };
@@ -36,16 +36,16 @@ describe("construct packet from fields", () => {
     });
 
     const expectedPayload = {
-      PHYPayload: Buffer.from("40d4c3b2a1000100eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a1000100eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("40d4c3b2a1000000eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a1000000eeeeeeee", "hex"),
       MHDR: Buffer.from("40", "hex"),
-      MACPayload: Buffer.from("d4c3b2a1000100", "hex"),
+      MACPayload: Buffer.from("d4c3b2a1000000", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.alloc(0),
       FCtrl: Buffer.from("00", "hex"),
-      FHDR: Buffer.from("d4c3b2a1000100", "hex"),
+      FHDR: Buffer.from("d4c3b2a1000000", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.alloc(0),
       FRMPayload: Buffer.from(""),
     };
@@ -63,16 +63,16 @@ describe("construct packet from fields", () => {
       MType: 5,
     });
     const expectedPayload = {
-      PHYPayload: Buffer.from("A0d4c3b2a10001000174657374eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a10001000174657374eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("A0d4c3b2a10000000174657374eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a10000000174657374eeeeeeee", "hex"),
       MHDR: Buffer.from("A0", "hex"),
-      MACPayload: Buffer.from("d4c3b2a10001000174657374", "hex"),
+      MACPayload: Buffer.from("d4c3b2a10000000174657374", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.alloc(0),
       FCtrl: Buffer.from("00", "hex"),
-      FHDR: Buffer.from("d4c3b2a1000100", "hex"),
+      FHDR: Buffer.from("d4c3b2a1000000", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.from("01", "hex"),
       FRMPayload: Buffer.from("test"),
     };
@@ -90,16 +90,16 @@ describe("construct packet from fields", () => {
       MType: "Confirmed Data Up",
     });
     const expectedPayload = {
-      PHYPayload: Buffer.from("80d4c3b2a10001000174657374eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a10001000174657374eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("80d4c3b2a10000000174657374eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a10000000174657374eeeeeeee", "hex"),
       MHDR: Buffer.from("80", "hex"),
-      MACPayload: Buffer.from("d4c3b2a10001000174657374", "hex"),
+      MACPayload: Buffer.from("d4c3b2a10000000174657374", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.alloc(0),
       FCtrl: Buffer.from("00", "hex"),
-      FHDR: Buffer.from("d4c3b2a1000100", "hex"),
+      FHDR: Buffer.from("d4c3b2a1000000", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.from("01", "hex"),
       FRMPayload: Buffer.from("test"),
     };
@@ -173,16 +173,16 @@ describe("construct packet from fields", () => {
       FOpts: Buffer.from("F0F1F2F3", "hex"),
     });
     const expectedPayload = {
-      PHYPayload: Buffer.from("40d4c3b2a1040100F0F1F2F30174657374eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a1040100F0F1F2F30174657374eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("40d4c3b2a1040000F0F1F2F30174657374eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a1040000F0F1F2F30174657374eeeeeeee", "hex"),
       MHDR: Buffer.from("40", "hex"),
-      MACPayload: Buffer.from("d4c3b2a1040100F0F1F2F30174657374", "hex"),
+      MACPayload: Buffer.from("d4c3b2a1040000F0F1F2F30174657374", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.from("F0F1F2F3", "hex"),
       FCtrl: Buffer.from("04", "hex"),
-      FHDR: Buffer.from("d4c3b2a1040100F0F1F2F3", "hex"),
+      FHDR: Buffer.from("d4c3b2a1040000F0F1F2F3", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.from("01", "hex"),
       FRMPayload: Buffer.from("test"),
     };

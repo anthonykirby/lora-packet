@@ -338,7 +338,7 @@ class LoraPacket {
     }
 
     if (!this.FCnt) {
-      this.FCnt = Buffer.from("0001", "hex");
+      this.FCnt = Buffer.from("0000", "hex");
     }
 
     if (!this.MIC) {

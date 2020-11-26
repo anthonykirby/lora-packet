@@ -33,7 +33,7 @@ describe("construct packet from fields", () => {
     const packet = LoraPayload.fromFields({
       payload: "",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: 1
+      FCnt: 1,
     });
 
     const expectedPayload = {
@@ -62,7 +62,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       MType: 5,
-      FCnt: 1
+      FCnt: 1,
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("A0d4c3b2a10001000174657374eeeeeeee", "hex"),
@@ -90,7 +90,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       MType: "Confirmed Data Up",
-      FCnt: 1
+      FCnt: 1,
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("80d4c3b2a10001000174657374eeeeeeee", "hex"),
@@ -174,7 +174,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       FOpts: Buffer.from("F0F1F2F3", "hex"),
-      FCnt: 1
+      FCnt: 1,
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("40d4c3b2a1040100F0F1F2F30174657374eeeeeeee", "hex"),

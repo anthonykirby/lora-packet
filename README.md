@@ -258,6 +258,7 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 
 #### Version history
 
+* 0.7.15 default FCnt should be 0
 * 0.7.14 bump mocha version
 * 0.7.13 fix CFList length
 * 0.7.12 fix CFList byte order
@@ -292,5 +293,5 @@ Different terminology is used by LoRaWAN / TTN / Multitech, & there's both
 * Thank you to [Flemming Madsen](https://github.com/amplexdenmark)
 * Thank you to [Giorgio Pillon](https://github.com/kalik1)
 * Thank you to [Nuno Cruz](https://github.com/nunomcruz)
-
+* Thank you to [Benjamin Cabé](https://github.com/kartben)
 

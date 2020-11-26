@@ -8,16 +8,16 @@ describe("construct packet from fields", () => {
     });
 
     const expectedPayload = {
-      PHYPayload: Buffer.from("40d4c3b2a10001000174657374eeeeeeee", "hex"),
-      MACPayloadWithMIC: Buffer.from("d4c3b2a10001000174657374eeeeeeee", "hex"),
+      PHYPayload: Buffer.from("40d4c3b2a10000000174657374eeeeeeee", "hex"),
+      MACPayloadWithMIC: Buffer.from("d4c3b2a10000000174657374eeeeeeee", "hex"),
       MHDR: Buffer.from("40", "hex"),
-      MACPayload: Buffer.from("d4c3b2a10001000174657374", "hex"),
+      MACPayload: Buffer.from("d4c3b2a10000000174657374", "hex"),
       MIC: Buffer.from("EEEEEEEE", "hex"),
       FOpts: Buffer.alloc(0),
       FCtrl: Buffer.from("00", "hex"),
-      FHDR: Buffer.from("d4c3b2a1000100", "hex"),
+      FHDR: Buffer.from("d4c3b2a1000000", "hex"),
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      FCnt: Buffer.from("0001", "hex"),
+      FCnt: Buffer.from("0000", "hex"),
       FPort: Buffer.from("01", "hex"),
       FRMPayload: Buffer.from("test"),
     };
@@ -33,6 +33,7 @@ describe("construct packet from fields", () => {
     const packet = LoraPayload.fromFields({
       payload: "",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      FCnt: 1
     });
 
     const expectedPayload = {
@@ -61,6 +62,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       MType: 5,
+      FCnt: 1
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("A0d4c3b2a10001000174657374eeeeeeee", "hex"),
@@ -88,6 +90,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       MType: "Confirmed Data Up",
+      FCnt: 1
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("80d4c3b2a10001000174657374eeeeeeee", "hex"),
@@ -171,6 +174,7 @@ describe("construct packet from fields", () => {
       payload: "test",
       DevAddr: Buffer.from("a1b2c3d4", "hex"),
       FOpts: Buffer.from("F0F1F2F3", "hex"),
+      FCnt: 1
     });
     const expectedPayload = {
       PHYPayload: Buffer.from("40d4c3b2a1040100F0F1F2F30174657374eeeeeeee", "hex"),

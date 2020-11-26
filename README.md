@@ -265,6 +265,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.3 default FCnt should be 0
 - 0.8.2 fix decryption of Join Accept
 - 0.8.1 fix shebang
 - 0.8.0 upgrade to typescript & node 10.x/12.x/14.x; deprecate pre-10.x
@@ -305,3 +306,4 @@ you'll find helpful.
 - Thank you to [Nuno Cruz](https://github.com/nunomcruz)
 - Thank you to [Felipe Lima](https://github.com/felipefdl) and the fine folks at [TagoIO](https://tago.io/)
 - Thank you to [Nicolas Graziano](https://github.com/ngraziano)
+- Thank you to [Benjamin Cabé](https://github.com/kartben)

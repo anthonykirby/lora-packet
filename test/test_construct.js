@@ -37,16 +37,16 @@ module.exports = function () {
                     DevAddr: new Buffer('a1b2c3d4', 'hex')
                 });
             var expected_pktBufs = {
-                PHYPayload: new Buffer('40d4c3b2a10001000174657374eeeeeeee', 'hex'),
-                MACPayloadWithMIC: new Buffer('d4c3b2a10001000174657374eeeeeeee', 'hex'),
+                PHYPayload: new Buffer('40d4c3b2a10000000174657374eeeeeeee', 'hex'),
+                MACPayloadWithMIC: new Buffer('d4c3b2a10000000174657374eeeeeeee', 'hex'),
                 MHDR: new Buffer('40', 'hex'),
-                MACPayload: new Buffer('d4c3b2a10001000174657374', 'hex'),
+                MACPayload: new Buffer('d4c3b2a10000000174657374', 'hex'),
                 MIC: new Buffer('EEEEEEEE', 'hex'),
                 FOpts: new Buffer(0),
                 FCtrl: new Buffer('00', 'hex'),
-                FHDR: new Buffer('d4c3b2a1000100', 'hex'),
+                FHDR: new Buffer('d4c3b2a1000000', 'hex'),
                 DevAddr: new Buffer('a1b2c3d4', 'hex'),
-                FCnt: new Buffer('0001', 'hex'),
+                FCnt: new Buffer('0000', 'hex'),
                 FPort: new Buffer('01', 'hex'),
                 FRMPayload: new Buffer('test')
             };
@@ -63,7 +63,8 @@ module.exports = function () {
             var packet = lora_packet.fromFields(
                 {
                     payload:'',
-                    DevAddr: new Buffer('a1b2c3d4', 'hex')
+                    DevAddr: new Buffer('a1b2c3d4', 'hex'),
+                    FCnt: 1
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a1000100eeeeeeee', 'hex'),
@@ -95,7 +96,8 @@ module.exports = function () {
                 {
                     payload:'test',
                     DevAddr: new Buffer('a1b2c3d4', 'hex'),
-                    MType: 5
+                    MType: 5,
+                    FCnt: 1
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('A0d4c3b2a10001000174657374eeeeeeee', 'hex'),
@@ -125,7 +127,8 @@ module.exports = function () {
                 {
                     payload:'test',
                     DevAddr: new Buffer('a1b2c3d4', 'hex'),
-                    MType: 'Confirmed Data Up'
+                    MType: 'Confirmed Data Up',
+                    FCnt: 1
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('80d4c3b2a10001000174657374eeeeeeee', 'hex'),
@@ -219,7 +222,8 @@ module.exports = function () {
                 {
                     payload:'test',
                     DevAddr: new Buffer('a1b2c3d4', 'hex'),
-                    FOpts: new Buffer('F0F1F2F3', 'hex')
+                    FOpts: new Buffer('F0F1F2F3', 'hex'),
+                    FCnt: 1
                 });
             var expected_pktBufs = {
                 PHYPayload: new Buffer('40d4c3b2a1040100F0F1F2F30174657374eeeeeeee', 'hex'),

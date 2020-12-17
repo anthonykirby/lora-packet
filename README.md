@@ -96,15 +96,19 @@ returns the frame count (_FCnt_) as a number
 
 returns the port (_FPort_) as a number (or null if FPort is absent)
 
-### packet.getFCtrl.ACK()
+### packet.getFCtrlACK()
 
 returns the flag (_ACK_) of field _FCtrl_ as a boolean
 
-### packet.getFCtrl.ADR()
+### packet.getFCtrlFPending()
+
+returns the flag (_FPending_) of field _FCtrl_ as a boolean
+
+### packet.getFCtrlADR()
 
 returns the flag (_ADR_) of field _FCtrl_ as a boolean
 
-### packet.getFCtrl.ADRACKReq()
+### packet.getFCtrlADRACKReq()
 
 returns the flag (_ADRACKReq_) of field _FCtrl_ as a boolean
 
@@ -265,6 +269,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.5 add docs + text output for FPending (data down) + ADRACKReq (data up)
 - 0.8.3 default FCnt should be 0
 - 0.8.2 fix decryption of Join Accept
 - 0.8.1 fix shebang

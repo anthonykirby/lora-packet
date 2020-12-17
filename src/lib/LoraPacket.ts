@@ -701,6 +701,11 @@ class LoraPacket {
       msg += "                  FCnt = " + this.getFCnt() + "\n";
       msg += "             FCtrl.ACK = " + this.getFCtrlACK() + "\n";
       msg += "             FCtrl.ADR = " + this.getFCtrlADR() + "\n";
+      if (this._getMType() == MType.CONFIRMED_DATA_DOWN || this._getMType() == MType.UNCONFIRMED_DATA_DOWN) {
+        msg += "        FCtrl.FPending = " + this.getFCtrlFPending() + "\n";
+      } else {
+        msg += "       FCtrl.ADRACKReq = " + this.getFCtrlADRACKReq() + "\n";
+      }
     }
     return msg;
   }

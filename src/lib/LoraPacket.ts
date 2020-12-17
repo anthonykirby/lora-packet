@@ -701,6 +701,7 @@ class LoraPacket {
       msg += "                  FCnt = " + this.getFCnt() + "\n";
       msg += "             FCtrl.ACK = " + this.getFCtrlACK() + "\n";
       msg += "             FCtrl.ADR = " + this.getFCtrlADR() + "\n";
+      msg += "        FCtrl.FPending = " + this.getFCtrlFPending() + "\n";
     }
     return msg;
   }

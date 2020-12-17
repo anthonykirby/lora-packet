@@ -269,7 +269,7 @@ you'll find helpful.
 
 #### Version history
 
-- 0.8.5 add docs + text output for FPending
+- 0.8.5 add docs + text output for FPending (data down) + ADRACKReq (data up)
 - 0.8.3 default FCnt should be 0
 - 0.8.2 fix decryption of Join Accept
 - 0.8.1 fix shebang

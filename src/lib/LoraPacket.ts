@@ -466,6 +466,12 @@ class LoraPacket {
     return false;
   }
 
+  public isConfirmed(): boolean {
+    const mtype = this._getMType();
+    if (mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP) return true;
+    return false;
+  }
+
   /**
    * Provide MType as a string
    */

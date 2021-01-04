@@ -108,9 +108,32 @@ describe("construct packet from fields", () => {
     };
     expect(packet).not.toBeUndefined;
     expect(packet).toMatchObject(expectedPayload);
-
     const parsed = LoraPayload.fromWire(expectedPayload.PHYPayload);
     expect(parsed).toMatchObject(expectedPayload);
+  });
+
+  it("should verify MType confirmed", () => {
+    const packet = LoraPayload.fromFields({
+      payload: "test",
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      MType: "Confirmed Data Up",
+      FCnt: 1,
+    });
+
+    expect(packet.isConfirmed()).toBe(true);
+
+  });
+
+  it("should verify MType unconfirmed", () => {
+    const packet = LoraPayload.fromFields({
+      payload: "test",
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      MType: "Unconfirmed Data Up",
+      FCnt: 1,
+    });
+
+    expect(packet.isConfirmed()).toBe(false);
+
   });
 
   it("should create packet with FCnt as buffer", () => {

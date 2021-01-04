@@ -92,6 +92,10 @@ returns the direction (_Dir_) as a string ('up' or 'down')
 
 returns the frame count (_FCnt_) as a number
 
+### packet.isConfirmed()
+
+returns true if packet is confirmed, else returns false 
+
 ### packet.getFPort()
 
 returns the port (_FPort_) as a number (or null if FPort is absent)

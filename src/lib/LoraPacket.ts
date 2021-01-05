@@ -79,7 +79,7 @@ class LoraPacket {
     if (payload.isDataMessage()) {
       // to encrypt, need NwkSKey if port=0, else AppSKey
       const port = payload.getFPort();
-      if (port && ((port == 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
+      if (port != null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
         // crypto is reversible (just XORs FRMPayload), so we can
         //  just do "decrypt" on the plaintext to get ciphertext
         const ciphertext = decrypt(payload, AppSKey, NwkSKey, FCntMSBytes);
@@ -315,7 +315,7 @@ class LoraPacket {
     this.FCtrl = Buffer.alloc(1);
     this.FCtrl.writeUInt8(fctrl, 0);
 
-    if (userFields.FPort) {
+    if (!isNaN(userFields.FPort) && userFields.FPort >= 0 && userFields.FPort <= 255) {
       this.FPort = Buffer.alloc(1);
       this.FPort.writeUInt8(userFields.FPort, 0);
     }
@@ -325,7 +325,7 @@ class LoraPacket {
       this.MHDR.writeUInt8(MType.UNCONFIRMED_DATA_UP << 5, 0);
     }
 
-    if (!this?.FPort) {
+    if (this?.FPort == null) {
       if (this?.FRMPayload && this.FRMPayload.length > 0) {
         this.FPort = Buffer.from("01", "hex");
       } else {
@@ -333,7 +333,7 @@ class LoraPacket {
       }
     }
 
-    if (!this?.FPort) {
+    if (!this?.FPort == null) {
       this.FPort = Buffer.from("01", "hex");
     }
 

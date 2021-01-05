@@ -41,4 +41,20 @@ describe("decrypt example packet", () => {
     expect(decrypted).not.toBeUndefined();
     expect(decrypted.toString()).toBe("tbst");
   });
+
+  it("Shuold Decode Port 0 ", () => {
+    const NwkSKey_hex = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4";
+    const NwkSKey = Buffer.from(NwkSKey_hex, "hex");
+
+    const packet = LoraPayload.fromFields({
+      payload: Buffer.from("02", "hex"),
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      MType: "Unconfirmed Data Up",
+      FPort: 0,
+      FCnt: 10,
+    }, undefined, NwkSKey);
+
+    const decrypted = decrypt(packet, undefined, NwkSKey);
+    expect(decrypted.toString('hex')).toBe('02');
+  });
 });

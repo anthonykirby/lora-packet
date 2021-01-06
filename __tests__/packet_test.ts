@@ -121,7 +121,6 @@ describe("construct packet from fields", () => {
     });
 
     expect(packet.isConfirmed()).toBe(true);
-
   });
 
   it("should verify MType unconfirmed", () => {
@@ -133,7 +132,6 @@ describe("construct packet from fields", () => {
     });
 
     expect(packet.isConfirmed()).toBe(false);
-
   });
 
   it("should create packet with FCnt as buffer", () => {
@@ -466,13 +464,15 @@ describe("construct packet from fields", () => {
     const NwkSKey_hex = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4";
     const NwkSKey = Buffer.from(NwkSKey_hex, "hex");
 
-    const packet = LoraPayload.fromFields({
-      payload: Buffer.from("02", "hex"),
-      DevAddr: Buffer.from("a1b2c3d4", "hex"),
-      MType: "Unconfirmed Data Up",
-      FPort: 0,
-      FCnt: 16,
-    }, undefined, NwkSKey);
+    const packet = LoraPayload.fromFields(
+      {
+        payload: Buffer.from("02", "hex"),
+        DevAddr: Buffer.from("a1b2c3d4", "hex"),
+        MType: "Unconfirmed Data Up",
+        FPort: 0,
+        FCnt: 16,
+      },
+      undefined, NwkSKey);
 
     const expectedPayload = {
       MHDR: Buffer.from("40", "hex"),

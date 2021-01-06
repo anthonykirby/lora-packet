@@ -54,7 +54,9 @@ describe("decrypt example packet", () => {
         FPort: 0,
         FCnt: 10,
       },
-      undefined, NwkSKey);
+      undefined, 
+      NwkSKey
+    );
 
     const decrypted = decrypt(packet, undefined, NwkSKey);
     expect(decrypted.toString("hex")).toBe("02");

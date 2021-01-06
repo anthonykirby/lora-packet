@@ -472,7 +472,9 @@ describe("construct packet from fields", () => {
         FPort: 0,
         FCnt: 16,
       },
-      undefined, NwkSKey);
+      undefined, 
+      NwkSKey
+    );
 
     const expectedPayload = {
       MHDR: Buffer.from("40", "hex"),
@@ -488,9 +490,7 @@ describe("construct packet from fields", () => {
       FOpts: Buffer.alloc(0),
       FHDR: Buffer.from("D4C3B2A1001000", "hex"),
     };
-
+    
     expect(packet).toMatchObject(expectedPayload);
-
   });
-
 });

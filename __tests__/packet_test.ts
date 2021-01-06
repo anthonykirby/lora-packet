@@ -108,9 +108,30 @@ describe("construct packet from fields", () => {
     };
     expect(packet).not.toBeUndefined;
     expect(packet).toMatchObject(expectedPayload);
-
     const parsed = LoraPayload.fromWire(expectedPayload.PHYPayload);
     expect(parsed).toMatchObject(expectedPayload);
+  });
+
+  it("should verify MType confirmed", () => {
+    const packet = LoraPayload.fromFields({
+      payload: "test",
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      MType: "Confirmed Data Up",
+      FCnt: 1,
+    });
+
+    expect(packet.isConfirmed()).toBe(true);
+  });
+
+  it("should verify MType unconfirmed", () => {
+    const packet = LoraPayload.fromFields({
+      payload: "test",
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      MType: "Unconfirmed Data Up",
+      FCnt: 1,
+    });
+
+    expect(packet.isConfirmed()).toBe(false);
   });
 
   it("should create packet with FCnt as buffer", () => {
@@ -437,5 +458,39 @@ describe("construct packet from fields", () => {
     expect(parsed).not.toBeUndefined();
     expect(parsed.FOpts).not.toBeUndefined();
     expect(parsed.FOpts).toMatchObject(Buffer.from("091103", "hex"));
+  });
+
+  it("should create packet with port 0 ", () => {
+    const NwkSKey_hex = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4";
+    const NwkSKey = Buffer.from(NwkSKey_hex, "hex");
+
+    const packet = LoraPayload.fromFields(
+      {
+        payload: Buffer.from("02", "hex"),
+        DevAddr: Buffer.from("a1b2c3d4", "hex"),
+        MType: "Unconfirmed Data Up",
+        FPort: 0,
+        FCnt: 16,
+      },
+      undefined,
+      NwkSKey
+    );
+
+    const expectedPayload = {
+      MHDR: Buffer.from("40", "hex"),
+      MACPayload: Buffer.from("D4C3B2A10010000027", "hex"),
+      FCtrl: Buffer.from("00", "hex"),
+      DevAddr: Buffer.from("a1b2c3d4", "hex"),
+      FCnt: Buffer.from("0010", "hex"),
+      FPort: Buffer.from("00", "hex"),
+      FRMPayload: Buffer.from("27", "hex"),
+      PHYPayload: Buffer.from("40D4C3B2A1001000002712A3F9C9", "hex"),
+      MACPayloadWithMIC: Buffer.from("D4C3B2A1001000002712A3F9C9", "hex"),
+      MIC: Buffer.from("12A3F9C9", "hex"),
+      FOpts: Buffer.alloc(0),
+      FHDR: Buffer.from("D4C3B2A1001000", "hex"),
+    };
+
+    expect(packet).toMatchObject(expectedPayload);
   });
 });

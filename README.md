@@ -92,6 +92,10 @@ returns the direction (_Dir_) as a string ('up' or 'down')
 
 returns the frame count (_FCnt_) as a number
 
+### packet.isConfirmed()
+
+returns true if packet is confirmed, else returns false 
+
 ### packet.getFPort()
 
 returns the port (_FPort_) as a number (or null if FPort is absent)
@@ -269,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.6 add isConfirmed & fix initialise with Port=0
 - 0.8.5 add docs + text output for FPending (data down) + ADRACKReq (data up)
 - 0.8.3 default FCnt should be 0
 - 0.8.2 fix decryption of Join Accept
@@ -312,3 +317,4 @@ you'll find helpful.
 - Thank you to [Felipe Lima](https://github.com/felipefdl) and the fine folks at [TagoIO](https://tago.io/)
 - Thank you to [Nicolas Graziano](https://github.com/ngraziano)
 - Thank you to [Benjamin Cabé](https://github.com/kartben)
+- Thank you to [kalik1](https://github.com/kalik1)

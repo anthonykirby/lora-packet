@@ -472,7 +472,7 @@ describe("construct packet from fields", () => {
         FPort: 0,
         FCnt: 16,
       },
-      undefined, 
+      undefined,
       NwkSKey
     );
 
@@ -490,7 +490,7 @@ describe("construct packet from fields", () => {
       FOpts: Buffer.alloc(0),
       FHDR: Buffer.from("D4C3B2A1001000", "hex"),
     };
-    
+
     expect(packet).toMatchObject(expectedPayload);
   });
 });

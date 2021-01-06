@@ -54,7 +54,7 @@ describe("decrypt example packet", () => {
         FPort: 0,
         FCnt: 10,
       },
-      undefined, 
+      undefined,
       NwkSKey
     );
 

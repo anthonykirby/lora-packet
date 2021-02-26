@@ -492,7 +492,5 @@ describe("construct packet from fields", () => {
     };
 
     expect(packet).toMatchObject(expectedPayload);
-
   });
-
 });

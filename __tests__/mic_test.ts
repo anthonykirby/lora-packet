@@ -65,6 +65,27 @@ describe("MIC checks", () => {
     expect(packet.MIC).toMatchObject(Buffer.from("f9d65d27", "hex"));
   });
 
+
+  it("recalculateMIC should calculate & overwrite existing data packet MIC and Update PHYpayload & MACPayloadWithMIC", () => {
+    const message_hex = "40f17dbe490002000195437876eeeeeeee";
+    const exprected_PHYPayload = "40f17dbe4900020001954378762b11ff0d";
+    const expected_MACPayloadWithMIC = "f17dbe4900020001954378762b11ff0d";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    expect(packet.MIC).toMatchObject(Buffer.from("EEEEEEEE", "hex"));
+
+    // expect failure
+    const NwkSKey = Buffer.from("44024241ed4ce9a68c6a8bc055233fd3", "hex");
+    expect(verifyMIC(packet, NwkSKey)).toBe(false);
+
+    // calculate again
+    recalculateMIC(packet, NwkSKey);
+    expect(verifyMIC(packet, NwkSKey)).toBe(true);
+    expect(packet.MIC).toMatchObject(Buffer.from("2b11ff0d", "hex"));
+    expect(packet.PHYPayload).toMatchObject(Buffer.from(exprected_PHYPayload, "hex"));
+    expect(packet.MACPayloadWithMIC).toMatchObject(Buffer.from(expected_MACPayloadWithMIC, "hex"));
+  });
+
   it("should calculate & verify correct join request packet MIC", () => {
     const message_hex = "0039363463336913AA05693574323831330489C65B1304";
     const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));

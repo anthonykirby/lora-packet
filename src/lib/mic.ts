@@ -119,6 +119,12 @@ function verifyMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntM
 function recalculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntMSBytes?: Buffer): void {
   const calculated = calculateMIC(payload, NwkSKey, AppKey, FCntMSBytes);
   payload.MIC = calculated;
+  if (!payload.MHDR) throw new Error("Missing MHDR");
+  if (!payload.MACPayload) throw new Error("Missing MACPayload");
+  if (!payload.MIC) throw new Error("Missing MIC");
+  if (!payload.MHDR) throw new Error("Missing MHDR");
+  payload.PHYPayload = Buffer.concat([payload.MHDR, payload.MACPayload, payload.MIC]);
+  payload.MACPayloadWithMIC = payload.PHYPayload.slice(payload.MHDR.length, payload.PHYPayload.length);
 }
 
 export { calculateMIC, verifyMIC, recalculateMIC };

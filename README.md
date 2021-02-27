@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.7 fix recalculateMIC
 - 0.8.6 add isConfirmed & fix initialise with Port=0
 - 0.8.5 add docs + text output for FPending (data down) + ADRACKReq (data up)
 - 0.8.3 default FCnt should be 0

@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.10 bump ws to 7.4.6 (CVE-2021-32640)
 - 0.8.9 bump lodash to 4.17.21 (CVE-2021-23337)
 - 0.8.8 bump y18n to 4.0.1 (CVE-2020-7774)
 - 0.8.7 fix recalculateMIC

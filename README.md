@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.12 bump multiple deps
 - 0.8.11 bump glob-parent 5.1.2 (CVE-2020-28469)
 - 0.8.10 bump ws to 7.4.6 (CVE-2021-32640)
 - 0.8.9 bump lodash to 4.17.21 (CVE-2021-23337)

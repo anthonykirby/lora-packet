@@ -248,6 +248,10 @@ class LoraPacket {
       throw new Error("DevAddr is required in a suitable format");
     }
 
+    if (userFields.DevEUI && userFields.DevEUI.length == 8) {
+      this.DevEUI = Buffer.from(userFields.DevEUI);
+    }
+
     if (typeof userFields.payload === "string") {
       this.FRMPayload = Buffer.from(userFields.payload);
     } else if (userFields.payload instanceof Buffer) {

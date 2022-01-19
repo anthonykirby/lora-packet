@@ -118,18 +118,16 @@ class LoraPacket {
 
     this.MHDR = incoming.slice(0, 1);
     this.MACPayload = incoming.slice(1, incoming.length - 4);
+    this.MACPayloadWithMIC = incoming.slice(1, incoming.length);
+    this.MIC = incoming.slice(incoming.length - 4);
 
     const mtype = this._getMType();
 
     if (mtype == MType.JOIN_REQUEST) {
-      this.MACPayloadWithMIC = incoming.slice(1, incoming.length);
       this.AppEUI = reverseBuffer(incoming.slice(1, 1 + 8));
       this.DevEUI = reverseBuffer(incoming.slice(9, 9 + 8));
       this.DevNonce = reverseBuffer(incoming.slice(17, 17 + 2));
-      this.MIC = incoming.slice(incoming.length - 4);
     } else if (mtype == MType.JOIN_ACCEPT) {
-      this.MACPayload = incoming.slice(1, incoming.length - 4);
-      this.MACPayloadWithMIC = incoming.slice(1, incoming.length);
       this.AppNonce = reverseBuffer(incoming.slice(1, 1 + 3));
       this.NetID = reverseBuffer(incoming.slice(4, 4 + 3));
       this.DevAddr = reverseBuffer(incoming.slice(7, 7 + 4));
@@ -141,12 +139,7 @@ class LoraPacket {
       } else {
         this.CFList = Buffer.alloc(0);
       }
-      this.MIC = incoming.slice(incoming.length - 4);
     } else if (this.isDataMessage()) {
-      this.MACPayload = incoming.slice(1, incoming.length - 4);
-      this.MACPayloadWithMIC = incoming.slice(1, incoming.length);
-      this.MIC = incoming.slice(incoming.length - 4);
-
       this.FCtrl = this.MACPayload.slice(4, 5);
       const FCtrl = this.FCtrl.readInt8(0);
       const FOptsLen = FCtrl & 0x0f;

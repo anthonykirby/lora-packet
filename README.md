@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.13 parse RFU and proprietary packets
 - 0.8.12 bump multiple deps
 - 0.8.11 bump glob-parent 5.1.2 (CVE-2020-28469)
 - 0.8.10 bump ws to 7.4.6 (CVE-2021-32640)
@@ -324,3 +325,4 @@ you'll find helpful.
 - Thank you to [Nicolas Graziano](https://github.com/ngraziano)
 - Thank you to [Benjamin Cabé](https://github.com/kartben)
 - Thank you to [kalik1](https://github.com/kalik1)
+- Thank you to [Pierre PLR](https://github.com/pplr)

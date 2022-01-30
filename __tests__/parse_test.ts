@@ -241,7 +241,7 @@ describe("parse example payload", () => {
 
     expect(parsed).toMatchObject(expectedPayload);
     expect(parsed.getMType()).toBe("Proprietary");
-  })
+  });
 
   it("should parse RFU packets", () => {
     const message_hex = "C0008B658839";
@@ -258,5 +258,5 @@ describe("parse example payload", () => {
 
     expect(parsed).toMatchObject(expectedPayload);
     expect(parsed.getMType()).toBe("RFU");
-  })
+  });
 });

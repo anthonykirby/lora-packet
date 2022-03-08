@@ -1,8 +1,7 @@
 import LoraPacket from "./LoraPacket";
 import { reverseBuffer } from "./util";
 
-// @ts-ignore
-import { aesCmac } from "node-aes-cmac";
+import { AesCmac } from "aes-cmac";
 
 // calculate MIC from payload
 function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntMSBytes?: Buffer): Buffer {
@@ -21,7 +20,7 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     const cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = aesCmac(AppKey, cmacInput, { returnAsBuffer: true });
+    let fullCmac = new AesCmac(AppKey).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
@@ -52,7 +51,7 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     const cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = aesCmac(AppKey, cmacInput, { returnAsBuffer: true });
+    let fullCmac = new AesCmac(AppKey).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
@@ -96,7 +95,7 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     const cmacInput = Buffer.concat([B0, payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = aesCmac(NwkSKey, cmacInput, { returnAsBuffer: true });
+    let fullCmac = new AesCmac(NwkSKey).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
 
     // only first 4 bytes of CMAC are used as MIC

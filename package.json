@@ -33,8 +33,8 @@
     "lora-packet-decode": "./out/cli.js"
   },
   "dependencies": {
-    "crypto-js": "4.0.0",
-    "node-aes-cmac": "0.1.1"
+    "aes-cmac": "1.0.3",
+    "crypto-js": "4.0.0"
   },
   "license": "MIT",
   "devDependencies": {

@@ -34,11 +34,11 @@
   },
   "dependencies": {
     "aes-cmac": "1.0.3",
-    "crypto-js": "4.0.0"
+    "crypto-js": "4.1.1"
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/crypto-js": "4.0.0",
+    "@types/crypto-js": "4.1.1",
     "@types/node": "14.11.8",
     "@typescript-eslint/eslint-plugin": "4.4.0",
     "@typescript-eslint/parser": "4.4.0",

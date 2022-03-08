@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.14 migrate from node-aes-cmac to aes-cmac
 - 0.8.13 parse RFU and proprietary packets
 - 0.8.12 bump multiple deps
 - 0.8.11 bump glob-parent 5.1.2 (CVE-2020-28469)
@@ -326,3 +327,4 @@ you'll find helpful.
 - Thank you to [Benjamin Cabé](https://github.com/kartben)
 - Thank you to [kalik1](https://github.com/kalik1)
 - Thank you to [Pierre PLR](https://github.com/pplr)
+- Thank you to [Ricardo Stoklosa](https://github.com/RicardoStoklosa)

@@ -273,6 +273,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.15 bump minimist 1.2.6 (CVE-2021-44906/CVE-2020-7598)
 - 0.8.14 migrate from node-aes-cmac to aes-cmac
 - 0.8.13 parse RFU and proprietary packets
 - 0.8.12 bump multiple deps

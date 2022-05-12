@@ -273,6 +273,15 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.15 bump minimist 1.2.6 (CVE-2021-44906/CVE-2020-7598)
+- 0.8.14 migrate from node-aes-cmac to aes-cmac
+- 0.8.13 parse RFU and proprietary packets
+- 0.8.12 bump multiple deps
+- 0.8.11 bump glob-parent 5.1.2 (CVE-2020-28469)
+- 0.8.10 bump ws to 7.4.6 (CVE-2021-32640)
+- 0.8.9 bump lodash to 4.17.21 (CVE-2021-23337)
+- 0.8.8 bump y18n to 4.0.1 (CVE-2020-7774)
+- 0.8.7 fix recalculateMIC
 - 0.8.6 add isConfirmed & fix initialise with Port=0
 - 0.8.5 add docs + text output for FPending (data down) + ADRACKReq (data up)
 - 0.8.3 default FCnt should be 0
@@ -318,3 +327,5 @@ you'll find helpful.
 - Thank you to [Nicolas Graziano](https://github.com/ngraziano)
 - Thank you to [Benjamin Cabé](https://github.com/kartben)
 - Thank you to [kalik1](https://github.com/kalik1)
+- Thank you to [Pierre PLR](https://github.com/pplr)
+- Thank you to [Ricardo Stoklosa](https://github.com/RicardoStoklosa)

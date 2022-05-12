@@ -225,4 +225,38 @@ describe("parse example payload", () => {
     expect(parsed.getRxDelayDel()).toBe(2);
     expect(parsed.getFCnt()).toBe(null);
   });
+
+  it("should parse proprietary packets", () => {
+    const message_hex = "E0008B658839";
+
+    const expectedPayload = {
+      PHYPayload: Buffer.from("E0008B658839", "hex"),
+      MACPayloadWithMIC: Buffer.from("008B658839", "hex"),
+      MHDR: Buffer.from("E0", "hex"),
+      MACPayload: Buffer.from("00", "hex"),
+      MIC: Buffer.from("8B658839", "hex"),
+    };
+
+    const parsed = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    expect(parsed).toMatchObject(expectedPayload);
+    expect(parsed.getMType()).toBe("Proprietary");
+  });
+
+  it("should parse RFU packets", () => {
+    const message_hex = "C0008B658839";
+
+    const expectedPayload = {
+      PHYPayload: Buffer.from("C0008B658839", "hex"),
+      MACPayloadWithMIC: Buffer.from("008B658839", "hex"),
+      MHDR: Buffer.from("C0", "hex"),
+      MACPayload: Buffer.from("00", "hex"),
+      MIC: Buffer.from("8B658839", "hex"),
+    };
+
+    const parsed = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    expect(parsed).toMatchObject(expectedPayload);
+    expect(parsed.getMType()).toBe("RFU");
+  });
 });

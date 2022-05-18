@@ -1,10 +1,18 @@
-import LoraPacket from "./LoraPacket";
+import LoraPacket, { LorawanVersion } from "./LoraPacket";
 import { reverseBuffer } from "./util";
 
 import { AesCmac } from "aes-cmac";
+import { Buffer } from "buffer";
 
 // calculate MIC from payload
-function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntMSBytes?: Buffer): Buffer {
+function calculateMIC(
+  payload: LoraPacket,
+  NwkSKey?: Buffer, //NwkSKey for DataUP/Down; SNwkSIntKey in 1.1
+  AppKey?: Buffer, //AppSKey for DataUP/Down; FNwkSIntKey in 1.1
+  FCntMSBytes?: Buffer,
+  ConfFCntDownTxDrTxCh?: Buffer
+): Buffer {
+  let LWVersion: LorawanVersion = LorawanVersion.V1_0;
   if (payload.isJoinRequestMessage()) {
     if (AppKey && AppKey.length !== 16) throw new Error("Expected a AppKey with length 16");
     if (!payload.MHDR) throw new Error("Expected MHDR to be defined");
@@ -36,19 +44,37 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     if (!payload.RxDelay) throw new Error("Expected RxDelay to be defined");
     if (!payload.CFList) throw new Error("Expected CFList to be defined");
     if (!payload.MACPayload) throw new Error("Expected MACPayload to be defined");
+    if (payload.getDLSettingsOptNeg()) LWVersion = LorawanVersion.V1_1;
 
-    // const msgLen =
-    //   payload.MHDR.length +
-    //   payload.AppNonce.length +
-    //   payload.NetID.length +
-    //   payload.DevAddr.length +
-    //   payload.DLSettings.length +
-    //   payload.RxDelay.length +
-    //   payload.CFList.length;
+    let cmacInput: Buffer = Buffer.alloc(0);
 
-    // CMAC over MHDR | AppNonce | NetID | DevAddr | DLSettings | RxDelay | CFList
-    // the seperate fields are not encrypted, use the encrypted concatenated field
-    const cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
+    if (LWVersion === LorawanVersion.V1_0) {
+      // const msgLen =
+      //   payload.MHDR.length +
+      //   payload.AppNonce.length +
+      //   payload.NetID.length +
+      //   payload.DevAddr.length +
+      //   payload.DLSettings.length +
+      //   payload.RxDelay.length +
+      //   payload.CFList.length;
+
+      // CMAC over MHDR | AppNonce | NetID | DevAddr | DLSettings | RxDelay | CFList
+      // the seperate fields are not encrypted, use the encrypted concatenated field
+
+      cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
+    } else if (LWVersion === LorawanVersion.V1_1) {
+      if (!payload.JoinReqType) throw new Error("Expected JoinReqType to be defined");
+      if (!payload.JoinEUI) throw new Error("Expected JoinEUI to be defined");
+      if (!payload.DevNonce) throw new Error("Expected DevNonce to be defined");
+
+      cmacInput = Buffer.concat([
+        payload.JoinReqType,
+        reverseBuffer(payload.JoinEUI),
+        reverseBuffer(payload.DevNonce),
+        payload.MHDR,
+        payload.MACPayload,
+      ]);
+    }
 
     // CMAC calculation (as RFC4493)
     let fullCmac = new AesCmac(AppKey).calculate(cmacInput);
@@ -58,6 +84,7 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
 
     return MIC;
   } else {
+    // ConfFCntDownTxDrTxCh = ConfFCntDownTxDrTxCh || Buffer.alloc(2, 0);
     if (NwkSKey && NwkSKey.length !== 16) throw new Error("Expected a NwkSKey with length 16");
     if (payload.DevAddr && payload.DevAddr.length !== 4) throw new Error("Expected a payload DevAddr with length 4");
     if (payload.FCnt && payload.FCnt.length !== 2) throw new Error("Expected a payload FCnt with length 2");
@@ -65,24 +92,55 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     if (!payload.DevAddr) throw new Error("Expected DevAddr to be defined");
     if (!payload.FCnt) throw new Error("Expected FCnt to be defined");
     if (!payload.MACPayload) throw new Error("Expected MACPayload to be defined");
-
     if (!FCntMSBytes) {
       FCntMSBytes = Buffer.from("0000", "hex");
     }
 
+    if (ConfFCntDownTxDrTxCh) {
+      if (!AppKey || AppKey?.length !== 16) throw new Error("Expected a FNwkSIntKey with length 16");
+      LWVersion = LorawanVersion.V1_1;
+    }
+
+    // if (NwkSKey && AppKey) {
+    //   LWVersion = LorawanVersion.V1_1;
+    // }
+
     let dir;
+    const isUplinkAndIs1_1 = payload.getDir() === "up" && LWVersion === LorawanVersion.V1_1;
+    const isDownlinkAndIs1_1 = payload.getDir() === "down" && LWVersion === LorawanVersion.V1_1;
+
     if (payload.getDir() == "up") {
       dir = Buffer.alloc(1, 0);
     } else if (payload.getDir() == "down") {
       dir = Buffer.alloc(1, 1);
+      if (!ConfFCntDownTxDrTxCh) {
+        ConfFCntDownTxDrTxCh = Buffer.alloc(4, 0);
+      } else if (ConfFCntDownTxDrTxCh && ConfFCntDownTxDrTxCh?.length !== 2) {
+        throw new Error("Expected a ConfFCntDown with length 2");
+      } else {
+        ConfFCntDownTxDrTxCh = Buffer.concat([ConfFCntDownTxDrTxCh, Buffer.alloc(2, 0)]);
+      }
     } else {
       throw new Error("expecting direction to be either 'up' or 'down'");
+    }
+
+    if (isUplinkAndIs1_1) {
+      if (!ConfFCntDownTxDrTxCh || ConfFCntDownTxDrTxCh?.length !== 4) {
+        throw new Error("Expected a ConfFCntDownTxDrTxCh with length 4 Expected ( ConfFCnt | TxDr | TxCh)");
+      }
+
+      if (payload.getFCtrlACK() || (isUplinkAndIs1_1 && payload.getFPort() === 0)) {
+        ConfFCntDownTxDrTxCh.writeUInt16BE(ConfFCntDownTxDrTxCh.readUInt16LE(0));
+      } else {
+        ConfFCntDownTxDrTxCh.writeUInt16BE(0);
+      }
     }
 
     const msgLen = payload.MHDR.length + payload.MACPayload.length;
 
     const B0 = Buffer.concat([
-      Buffer.from("4900000000", "hex"), // as spec
+      Buffer.from([0x49]), // as spec
+      isDownlinkAndIs1_1 ? ConfFCntDownTxDrTxCh : Buffer.alloc(4, 0), // LoraWan Spec 1.1, pag. 27
       dir, // direction ('Dir')
       reverseBuffer(payload.DevAddr),
       reverseBuffer(payload.FCnt),
@@ -95,28 +153,64 @@ function calculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FC
     const cmacInput = Buffer.concat([B0, payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = new AesCmac(NwkSKey).calculate(cmacInput);
+    let key = NwkSKey;
+    if (isDownlinkAndIs1_1) key = AppKey;
+    let fullCmac = new AesCmac(key).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
 
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
+
+    if (isUplinkAndIs1_1) {
+      const B1 = Buffer.concat([
+        Buffer.from([0x49]), // as spec
+        ConfFCntDownTxDrTxCh, // LoraWan Spec 1.1, pag. 27
+        dir, // direction ('Dir')
+        reverseBuffer(payload.DevAddr),
+        reverseBuffer(payload.FCnt),
+        FCntMSBytes, // upper 2 bytes of FCnt (zeroes)
+        Buffer.alloc(1, 0), // 0x00
+        Buffer.alloc(1, msgLen), // len(msg)
+      ]);
+
+      const cmacSInput = Buffer.concat([B1, payload.MHDR, payload.MACPayload]);
+      let fullCmacS = new AesCmac(AppKey).calculate(cmacSInput);
+      if (!(fullCmacS instanceof Buffer)) fullCmacS = Buffer.from(fullCmacS);
+
+      // only first 2 bytes of CMAC and CMACS are used as MIC
+      const MICS = fullCmacS.slice(0, 4);
+
+      return Buffer.concat([MICS.slice(0, 2), MIC.slice(0, 2)]);
+    }
 
     return MIC;
   }
 }
 
 // verify is just calculate & compare
-function verifyMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntMSBytes?: Buffer): boolean {
+function verifyMIC(
+  payload: LoraPacket,
+  NwkSKey?: Buffer,
+  AppKey?: Buffer,
+  FCntMSBytes?: Buffer,
+  ConfFCntDownTxDrTxCh?: Buffer
+): boolean {
   if (payload.MIC && payload.MIC.length !== 4) throw new Error("Expected a payload payload.MIC with length 4");
 
-  const calculated = calculateMIC(payload, NwkSKey, AppKey, FCntMSBytes);
+  const calculated = calculateMIC(payload, NwkSKey, AppKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
   if (!payload.MIC) return false;
   return Buffer.compare(payload.MIC, calculated) === 0;
 }
 
 // calculate MIC & store
-function recalculateMIC(payload: LoraPacket, NwkSKey?: Buffer, AppKey?: Buffer, FCntMSBytes?: Buffer): void {
-  const calculated = calculateMIC(payload, NwkSKey, AppKey, FCntMSBytes);
+function recalculateMIC(
+  payload: LoraPacket,
+  NwkSKey?: Buffer,
+  AppKey?: Buffer,
+  FCntMSBytes?: Buffer,
+  ConfFCntDownTxDrTxCh?: Buffer
+): void {
+  const calculated = calculateMIC(payload, NwkSKey, AppKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
   payload.MIC = calculated;
   if (!payload.MHDR) throw new Error("Missing MHDR");
   if (!payload.MACPayload) throw new Error("Missing MACPayload");

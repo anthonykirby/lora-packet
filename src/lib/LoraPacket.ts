@@ -1,6 +1,7 @@
 import { reverseBuffer, asHexString } from "./util";
-import { decrypt, decryptJoin } from "./crypto";
+import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
 import { recalculateMIC } from "./mic";
+import { Buffer } from "buffer";
 
 enum MType {
   JOIN_REQUEST,
@@ -9,8 +10,13 @@ enum MType {
   UNCONFIRMED_DATA_DOWN,
   CONFIRMED_DATA_UP,
   CONFIRMED_DATA_DOWN,
+  REJOIN_REQUEST,
 }
 
+enum LorawanVersion {
+  V1_0 = "1.0",
+  V1_1 = "1.1",
+}
 enum Constants {
   FCTRL_ADR = 0x80,
   FCTRL_ADRACKREQ = 0x40,
@@ -20,6 +26,8 @@ enum Constants {
   DLSETTINGS_RXONEDROFFSET_POS = 4,
   DLSETTINGS_RXTWODATARATE_MASK = 0x0f,
   DLSETTINGS_RXTWODATARATE_POS = 0,
+  DLSETTINGS_OPTNEG_MASK = 0x80,
+  DLSETTINGS_OPTNEG_POS = 7,
   RXDELAY_DEL_MASK = 0x0f,
   RXDELAY_DEL_POS = 0,
 }
@@ -31,7 +39,7 @@ const MTYPE_DESCRIPTIONS = [
   "Unconfirmed Data Down",
   "Confirmed Data Up",
   "Confirmed Data Down",
-  "RFU",
+  "Rejoin Request",
   "Proprietary",
 ];
 
@@ -56,6 +64,7 @@ export interface IUserFields {
     ACK?: boolean;
     FPending?: boolean;
   };
+  JoinReqType?: Buffer | number;
 }
 
 class LoraPacket {
@@ -70,7 +79,8 @@ class LoraPacket {
     AppSKey?: Buffer,
     NwkSKey?: Buffer,
     AppKey?: Buffer,
-    FCntMSBytes?: Buffer
+    FCntMSBytes?: Buffer,
+    ConfFCntDownTxDrTxCh?: Buffer
   ): LoraPacket {
     if (!FCntMSBytes) FCntMSBytes = Buffer.alloc(2, 0);
     const payload = new LoraPacket();
@@ -78,18 +88,26 @@ class LoraPacket {
     payload._initFromFields(fields);
     if (payload.isDataMessage()) {
       // to encrypt, need NwkSKey if port=0, else AppSKey
+
       const port = payload.getFPort();
+
       if (port != null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
         // crypto is reversible (just XORs FRMPayload), so we can
         //  just do "decrypt" on the plaintext to get ciphertext
-        const ciphertext = decrypt(payload, AppSKey, NwkSKey, FCntMSBytes);
+
+        let ciphertext: Buffer;
+        if (port === 0 && NwkSKey?.length === 16 && AppSKey?.length === 16 && AppKey?.length === 16) {
+          ciphertext = decrypt(payload, undefined, AppSKey, FCntMSBytes);
+        } else {
+          ciphertext = decrypt(payload, AppSKey, NwkSKey, FCntMSBytes);
+        }
 
         // overwrite payload with ciphertext
         payload.FRMPayload = ciphertext;
         // recalculate buffers to be ready for MIC calc'n
         payload._mergeGroupFields();
         if (NwkSKey?.length === 16) {
-          recalculateMIC(payload, NwkSKey, AppKey, FCntMSBytes);
+          recalculateMIC(payload, NwkSKey, AppKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
           payload._mergeGroupFields();
         }
       }
@@ -133,11 +151,23 @@ class LoraPacket {
       this.DevAddr = reverseBuffer(incoming.slice(7, 7 + 4));
       this.DLSettings = incoming.slice(11, 11 + 1);
       this.RxDelay = incoming.slice(12, 12 + 1);
+      this.JoinReqType = Buffer.from([0xff]);
 
       if (incoming.length == 13 + 16 + 4) {
         this.CFList = incoming.slice(13, 13 + 16);
       } else {
         this.CFList = Buffer.alloc(0);
+      }
+    } else if (mtype == MType.REJOIN_REQUEST) {
+      this.RejoinType = reverseBuffer(incoming.slice(1, 2));
+      if (this.RejoinType[0] === 0 || this.RejoinType[0] === 2) {
+        this.NetID = reverseBuffer(incoming.slice(2, 2 + 3));
+        this.DevEUI = reverseBuffer(incoming.slice(5, 5 + 8));
+        this.RJcount0 = reverseBuffer(incoming.slice(13, 13 + 2));
+      } else if (this.RejoinType[0] === 1) {
+        this.JoinEUI = reverseBuffer(incoming.slice(2, 2 + 8));
+        this.DevEUI = reverseBuffer(incoming.slice(10, 10 + 8));
+        this.RJcount1 = reverseBuffer(incoming.slice(13, 13 + 2));
       }
     } else if (this.isDataMessage()) {
       this.FCtrl = this.MACPayload.slice(4, 5);
@@ -429,6 +459,31 @@ class LoraPacket {
       }
     }
 
+    if (!userFields.JoinReqType) {
+      this.JoinReqType = Buffer.from("ff", "hex");
+    } else {
+      if (userFields.JoinReqType instanceof Buffer && userFields.JoinReqType.length == 1) {
+        this.JoinReqType = Buffer.from(userFields.JoinReqType);
+      } else if (typeof userFields.JoinReqType === "number") {
+        this.JoinReqType = Buffer.alloc(1);
+        this.JoinReqType.writeUInt8(userFields.JoinReqType, 0);
+      } else {
+        throw new Error("JoinReqType is required in a suitable format");
+      }
+    }
+
+    if (userFields.AppEUI && userFields.AppEUI.length == 8) {
+      this.AppEUI = Buffer.from(userFields.AppEUI);
+    } else if (this.getDLSettingsOptNeg()) {
+      throw new Error("AppEUI/JoinEUI is required in a suitable format");
+    }
+
+    if (userFields.DevNonce && userFields.DevNonce.length == 2) {
+      this.DevNonce = Buffer.from(userFields.DevNonce);
+    } else if (this.getDLSettingsOptNeg()) {
+      throw new Error("DevNonce is required in a suitable format");
+    }
+
     if (!this.DLSettings) {
       this.DLSettings = Buffer.from("00", "hex");
     }
@@ -551,6 +606,14 @@ class LoraPacket {
   }
 
   /**
+   * Provide DLSettings.OptNeg as boolean
+   */
+  public getDLSettingsOptNeg(): boolean | null {
+    if (!this.DLSettings) return null;
+    return (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_OPTNEG_MASK) >> Constants.DLSETTINGS_OPTNEG_POS === 1;
+  }
+
+  /**
    * Provide RxDelay.Del as integer
    */
   public getRxDelayDel(): number | null {
@@ -615,6 +678,31 @@ class LoraPacket {
 
   public getBuffers() {
     return this;
+  }
+
+  public decryptFOpts(
+    NwkSEncKey: Buffer,
+    NwkSKey?: Buffer,
+    FCntMSBytes?: Buffer,
+    ConfFCntDownTxDrTxCh?: Buffer
+  ): Buffer {
+    return this.encryptFOpts(NwkSEncKey, NwkSKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
+  }
+  public encryptFOpts(
+    NwkSEncKey: Buffer,
+    SNwkSIntKey?: Buffer,
+    FCntMSBytes?: Buffer,
+    ConfFCntDownTxDrTxCh?: Buffer
+  ): Buffer {
+    if (!this.FOpts) return Buffer.alloc(0);
+    if (!NwkSEncKey || NwkSEncKey?.length !== 16) throw new Error("NwkSEncKey must be 16 bytes");
+    this.FOpts = decryptFOpts(this, NwkSEncKey, FCntMSBytes);
+    this._mergeGroupFields();
+    if (SNwkSIntKey?.length === 16) {
+      recalculateMIC(this, SNwkSIntKey, undefined, FCntMSBytes, ConfFCntDownTxDrTxCh);
+      this._mergeGroupFields();
+    }
+    return this.FOpts;
   }
 
   public getPHYPayload(): Buffer | void {
@@ -709,6 +797,22 @@ class LoraPacket {
     return msg;
   }
 
+  get JoinEUI(): Buffer {
+    return this.AppEUI;
+  }
+
+  set JoinEUI(v: Buffer) {
+    this.AppEUI = v;
+  }
+
+  get JoinNonce(): Buffer {
+    return this.AppNonce;
+  }
+
+  set JoinNonce(v: Buffer) {
+    this.AppNonce = v;
+  }
+
   PHYPayload?: Buffer;
   MHDR?: Buffer;
   MACPayload?: Buffer;
@@ -729,6 +833,11 @@ class LoraPacket {
   FHDR?: Buffer;
   FPort?: Buffer;
   FRMPayload?: Buffer;
+  JoinReqType?: Buffer;
+  RejoinType?: Buffer;
+  RJcount0?: Buffer;
+  RJcount1?: Buffer;
 }
 
 export default LoraPacket;
+export { LorawanVersion };

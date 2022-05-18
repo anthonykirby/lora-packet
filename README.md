@@ -116,6 +116,13 @@ returns the flag (_ADR_) of field _FCtrl_ as a boolean
 
 returns the flag (_ADRACKReq_) of field _FCtrl_ as a boolean
 
+### packet.encryptFOpts(NwkSEncKey, [, SNwkSIntKey] [, FCntMSBytes] [, ConfFCntDownTxDrTxCh])
+returns an object containing the encrypted FOpts field. 
+If SNwkSIntKey is provided, the mic is recalculated and modifies the packet.
+
+### packet.decryptFOpts(NwkSEncKey, [, SNwkSIntKey] [, FCntMSBytes] [, ConfFCntDownTxDrTxCh])
+alias for encryptFOpts, just for sake of clarification
+
 ### verifyMIC(packet, NwkSKey [, AppKey] [, FCntMSBytes])
 
 returns a boolean; true if the MIC is correct (i.e. the value at the end of
@@ -172,6 +179,7 @@ takes an object with properties representing fields in the packet - see example 
 The wire-format payload can be obtained by calling _getPHYPayload()_
 (or _getBuffers().PHYPayload_)
 
+
 #### Required fields:
 
 - _MType_ - supplied as number (0-7 or constants) or string
@@ -185,6 +193,16 @@ The wire-format payload can be obtained by calling _getPHYPayload()_
 - _FCtrl.ACK_ - boolean (default = false)
 - _FCtrl.FPending_ - boolean (default = false)
 - _FPort_ - number (default = 1)
+
+#### Lorawan 1.1
+ in Lorawan 1.1 optional fields after `data` are:
+- NwkSEncKey,
+- FNwkSIntKey,
+- SNwkSIntKey.
+- FCntMSBytes
+- ConfFCntDownTxDrTxCh
+
+For usage Refer to Lorawan 1.1 Spec.
 
 ## Example:
 

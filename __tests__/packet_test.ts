@@ -1,4 +1,6 @@
 import LoraPayload from "../src/lib/LoraPacket";
+import { decrypt, decryptFOpts } from "../src/lib/crypto";
+import { recalculateMIC } from "../src/lib/mic";
 
 describe("construct packet from fields", () => {
   it("should create packet with minimal input", () => {
@@ -492,5 +494,229 @@ describe("construct packet from fields", () => {
     };
 
     expect(packet).toMatchObject(expectedPayload);
+  });
+
+  //https://pkg.go.dev/github.com/brocaar/lorawan#example-PHYPayload-Lorawan11JoinAcceptSend
+  it("should create packet with OptNeg", () => {
+    const NwkKey = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    const joinEUI = Buffer.from([8, 7, 6, 5, 4, 3, 2, 1]);
+    const devNonce = Buffer.from([1, 2]);
+
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Join Accept",
+        AppNonce: Buffer.from("010101", "hex"),
+        NetID: Buffer.from("020202", "hex"),
+        DevAddr: Buffer.from("01020304", "hex"),
+        AppEUI: joinEUI,
+        DevNonce: devNonce,
+        DLSettings: Buffer.from([0b10000000]), //OptNeg=1,RX2DR=0,RX1DROffset=1
+        RxDelay: Buffer.from("00", "hex"),
+      },
+      undefined,
+      undefined,
+      NwkKey
+    );
+
+    const expectedPayload = {
+      AppNonce: Buffer.from("010101", "hex"),
+      NetID: Buffer.from("020202", "hex"),
+      DevAddr: Buffer.from("01020304", "hex"),
+      DLSettings: Buffer.from("80", "hex"),
+      RxDelay: Buffer.from("00", "hex"),
+      JoinReqType: Buffer.from("ff", "hex"),
+      AppEUI: Buffer.from("0807060504030201", "hex"),
+      DevNonce: Buffer.from("0102", "hex"),
+      CFList: Buffer.from("", "hex"),
+      MHDR: Buffer.from("20", "hex"),
+      MIC: Buffer.from("93ff9a3a", "hex"),
+      MACPayload: Buffer.from("010101020202040302018000", "hex"),
+      PHYPayload: Buffer.from("207abeea06b02920f11c02d0348fcf1815", "hex"),
+      MACPayloadWithMIC: Buffer.from("7abeea06b02920f11c02d0348fcf1815", "hex"),
+    };
+
+    expect(packet).toMatchObject(expectedPayload);
+  });
+
+  //FROM https://pkg.go.dev/github.com/brocaar/lorawan
+  it("should encode packet with Lorawan10 ", () => {
+    const nwkSKey = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    const appSKey = Buffer.from([16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]);
+    const fport1 = 10;
+
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Confirmed Data Up",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FPort: fport1,
+        FOpts: Buffer.from([0x06, 0x73, 0x07]),
+        payload: Buffer.from("01020304", "hex"),
+      },
+      appSKey,
+      nwkSKey
+    );
+
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual("80040302010300000673070ae264d4f7e117d2c0");
+  });
+
+  //FROM https://github.com/brocaar/lorawan/blob/master/phypayload_test.go
+
+  it("should encode packet with Lorawan11 (1. FRMPayload data)", () => {
+    const expectedPacket = Buffer.from([64, 4, 3, 2, 1, 128, 1, 0, 1, 166, 148, 100, 38, 21, 118, 18, 54, 106]);
+
+    const SNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+    const FNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]);
+    const NwkSEncKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]);
+    const AppSKey = Buffer.from([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    const fport1 = 1;
+    const confFCnt = Buffer.from([0x00, 0x01]);
+    const txDR = Buffer.from([0x02]);
+    const txCh = Buffer.from([0x03]);
+
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Up",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FPort: fport1,
+        FCnt: 1,
+        payload: "hello",
+        FCtrl: {
+          ADR: true,
+        },
+      },
+      AppSKey,
+      FNwkSIntKey,
+      SNwkSIntKey,
+      undefined,
+      Buffer.concat([confFCnt, txDR, txCh])
+      //Buffer.alloc(4,0)
+    );
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
+  });
+
+  it("should encode packet with Lorawan11 (2. FRMPayload data with ACK (in this case the confirmed fCnt is used in the mic))", () => {
+    const expectedPacket = Buffer.from([64, 4, 3, 2, 1, 160, 1, 0, 1, 166, 148, 100, 38, 21, 248, 66, 196, 185]);
+
+    const SNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+    const FNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]);
+    const NwkSEncKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]);
+    const AppSKey = Buffer.from([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+    const fport1 = 1;
+    const confFCnt = Buffer.from([0x00, 0x01]);
+    const txDR = Buffer.from([0x02]);
+    const txCh = Buffer.from([0x03]);
+
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Up",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FPort: fport1,
+        FCnt: 1,
+        payload: "hello",
+        FCtrl: {
+          ADR: true,
+          ACK: true,
+        },
+      },
+      AppSKey,
+      FNwkSIntKey,
+      SNwkSIntKey,
+      undefined,
+      Buffer.concat([confFCnt, txDR, txCh])
+      //Buffer.alloc(4,0)
+    );
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
+  });
+
+
+  it("should encode packet with Lorawan11 (3. Mac-commands in FOpts (encrypted, using NFCntDown))", () => {
+    const expectedPacket = Buffer.from([96, 4, 3, 2, 1, 3, 0, 0, 223, 180, 241, 226, 79, 31, 159]);
+
+    const SNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+    const FNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]);
+    const NwkSEncKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]);
+    const AppSKey = Buffer.from([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Down",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FCnt: 0,
+        FOpts: Buffer.from([0x02, 0x07, 0x01]),
+        payload: Buffer.alloc(0),
+      },
+      AppSKey,
+      FNwkSIntKey,
+      SNwkSIntKey,
+      undefined,
+      undefined
+    );
+
+    packet.encryptFOpts(NwkSEncKey, SNwkSIntKey);
+
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
+
+  });
+
+  it("should encode packet with Lorawan11 (4. Mac-commands in FOpts (encrypted, using AFCntDown encryption flag))", () => {
+    const expectedPacket = Buffer.from([96, 4, 3, 2, 1, 3, 0, 0, 2, 7, 1, 1, 119, 112, 30, 163]);
+
+    const SNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+    const FNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]);
+    const NwkSEncKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]);
+    const AppSKey = Buffer.from([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+    const confFCnt = Buffer.from([0x00, 0x00]);
+    const fport1 = 1;
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Down",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FCnt: 0,
+        FPort: fport1,
+        FOpts: Buffer.from([0x02, 0x07, 0x01]),
+        payload: Buffer.alloc(0),
+      },
+      AppSKey,
+      FNwkSIntKey,
+      SNwkSIntKey,
+      undefined,
+      confFCnt
+    );
+
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
+  });
+
+  // https://github.com/brocaar/lorawan/issues/64
+  it("should encode packet with Lorawan11 (5. Mac-commands in FRMPayload)", () => {
+    const expectedPacket = Buffer.from("400403020100000000f7ded3cc995ea7", "hex");
+
+    const SNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]);
+    const FNwkSIntKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3]);
+    const NwkSEncKey = Buffer.from([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4]);
+
+    const confFCnt = Buffer.from([0x00, 0x00]);
+    const txDR = Buffer.from([0x02]);
+    const txCh = Buffer.from([0x03]);
+
+    const macCommands = Buffer.from([0x2, 0x03, 0x5]);
+
+    const fport0 = 0;
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Up",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FPort: fport0,
+        payload: macCommands,
+      },
+      NwkSEncKey,
+      FNwkSIntKey,
+      SNwkSIntKey,
+      undefined,
+      Buffer.concat([confFCnt, txDR, txCh])
+    );
+
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
+    expect(decrypt(packet, null, NwkSEncKey).toString("hex")).toStrictEqual(macCommands.toString("hex"));
   });
 });

@@ -55,4 +55,29 @@ describe("construct join accept from fields and encrypt", () => {
     const parsed = LoraPayload.fromWire(PHYPayloadDecrypted);
     expect(parsed).toMatchObject(expectedPayloadDecrypted);
   });
+
+  // https://github.com/brocaar/lorawan/blob/master/phypayload_test.go
+  it("should create join accept as in brocaar/lorawan", () => {
+    const appKey = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
+    const JoinEUI = Buffer.from([8, 7, 6, 5, 4, 3, 2, 1]);
+
+    const packet = LoraPayload.fromFields(
+      {
+        AppNonce: Buffer.from("010101", "hex"),
+        DevNonce: Buffer.from("0102", "hex"),
+        AppEUI: JoinEUI,
+        NetID: Buffer.from("020202", "hex"),
+        DevAddr: Buffer.from("01020304", "hex"),
+        DLSettings: Buffer.from([0b10000000]),
+        RxDelay: 0,
+      },
+      null,
+      null,
+      appKey
+    );
+
+    expect(packet.PHYPayload.toString("hex")).toStrictEqual(
+      Buffer.from("IHq+6gawKSDxHALQNI/PGBU=", "base64").toString("hex")
+    );
+  });
 });

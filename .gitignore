@@ -3,6 +3,7 @@ README.html
 node_modules
 demo*.js
 npm-debug.log
+pnpm-lock.yaml
 .tern-port
 .vscode
 out/

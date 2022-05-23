@@ -7,8 +7,8 @@ import { Buffer } from "buffer";
 // calculate MIC from payload
 function calculateMIC(
   payload: LoraPacket,
-  NwkSKey?: Buffer, //NwkSKey for DataUP/Down; SNwkSIntKey in 1.1
-  AppKey?: Buffer, //AppSKey for DataUP/Down; FNwkSIntKey in 1.1
+  NwkSKey?: Buffer, //NwkSKey for DataUP/Down; SNwkSIntKey in data 1.1; SNwkSIntKey in Join 1.1
+  AppKey?: Buffer, //AppSKey for DataUP/Down; FNwkSIntKey in data 1.1; JSIntKey in Join 1.1
   FCntMSBytes?: Buffer,
   ConfFCntDownTxDrTxCh?: Buffer
 ): Buffer {
@@ -34,6 +34,31 @@ function calculateMIC(
     const MIC = fullCmac.slice(0, 4);
 
     return MIC;
+  } else if (payload.isReJoinRequestMessage()) {
+    if (payload.RejoinType[0] === 1 && (!AppKey || AppKey.length !== 16))
+      throw new Error("Expected a JSIntKey with length 16");
+    if ((payload.RejoinType[0] === 0 || payload.RejoinType[0] === 2) && (!NwkSKey || NwkSKey.length !== 16))
+      throw new Error("Expected a SNwkSIntKey with length 16");
+    if (AppKey && AppKey.length !== 16) throw new Error("Expected a AppKey with length 16");
+    if (!payload.MHDR) throw new Error("Expected MHDR to be defined");
+    if (!payload.RejoinType) throw new Error("Expected RejoinType to be defined");
+    if (!payload.NetID && !payload.AppEUI) throw new Error("Expected NetID or JoinEUI to be defined");
+    if (!payload.DevEUI) throw new Error("Expected DevEUI to be defined");
+    if (!payload.RJCount0 && !payload.RJCount1) throw new Error("Expected RJCount0 or RJCount1 to be defined");
+    // const msgLen = payload.MHDR.length + payload.AppEUI.length + payload.DevEUI.length + payload.DevNonce.length;
+
+    // CMAC over MHDR | AppEUI | DevEUI | DevNonce
+    // the seperate fields are not in little-endian format, use the concatenated field
+    const cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
+
+    // CMAC calculation (as RFC4493)
+    const calcKey = payload.RejoinType[0] === 1 ? AppKey : NwkSKey;
+    let fullCmac = new AesCmac(calcKey).calculate(cmacInput);
+    if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
+    // only first 4 bytes of CMAC are used as MIC
+    const MIC = fullCmac.slice(0, 4);
+
+    return MIC;
   } else if (payload.isJoinAcceptMessage()) {
     if (AppKey && AppKey.length !== 16) throw new Error("Expected a AppKey with length 16");
     if (!payload.MHDR) throw new Error("Expected MHDR to be defined");
@@ -48,6 +73,7 @@ function calculateMIC(
 
     let cmacInput: Buffer = Buffer.alloc(0);
 
+    let cmacKey: Buffer = AppKey;
     if (LWVersion === LorawanVersion.V1_0) {
       // const msgLen =
       //   payload.MHDR.length +
@@ -66,7 +92,8 @@ function calculateMIC(
       if (!payload.JoinReqType) throw new Error("Expected JoinReqType to be defined");
       if (!payload.JoinEUI) throw new Error("Expected JoinEUI to be defined");
       if (!payload.DevNonce) throw new Error("Expected DevNonce to be defined");
-
+      if (!NwkSKey || NwkSKey.length !== 16) throw new Error("Expected a NwkSKey with length 16");
+      cmacKey = NwkSKey;
       cmacInput = Buffer.concat([
         payload.JoinReqType,
         reverseBuffer(payload.JoinEUI),
@@ -77,7 +104,7 @@ function calculateMIC(
     }
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = new AesCmac(AppKey).calculate(cmacInput);
+    let fullCmac = new AesCmac(cmacKey).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);

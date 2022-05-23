@@ -159,15 +159,15 @@ class LoraPacket {
         this.CFList = Buffer.alloc(0);
       }
     } else if (mtype == MType.REJOIN_REQUEST) {
-      this.RejoinType = reverseBuffer(incoming.slice(1, 2));
+      this.RejoinType = incoming.slice(1, 1 + 1);
       if (this.RejoinType[0] === 0 || this.RejoinType[0] === 2) {
         this.NetID = reverseBuffer(incoming.slice(2, 2 + 3));
         this.DevEUI = reverseBuffer(incoming.slice(5, 5 + 8));
-        this.RJcount0 = reverseBuffer(incoming.slice(13, 13 + 2));
+        this.RJCount0 = reverseBuffer(incoming.slice(13, 13 + 2));
       } else if (this.RejoinType[0] === 1) {
         this.JoinEUI = reverseBuffer(incoming.slice(2, 2 + 8));
         this.DevEUI = reverseBuffer(incoming.slice(10, 10 + 8));
-        this.RJcount1 = reverseBuffer(incoming.slice(13, 13 + 2));
+        this.RJCount1 = reverseBuffer(incoming.slice(13, 13 + 2));
       }
     } else if (this.isDataMessage()) {
       this.FCtrl = this.MACPayload.slice(4, 5);
@@ -713,6 +713,10 @@ class LoraPacket {
     return this._getMType() == MType.JOIN_REQUEST;
   }
 
+  public isReJoinRequestMessage() {
+    return this._getMType() == MType.REJOIN_REQUEST;
+  }
+
   public isJoinAcceptMessage() {
     return this._getMType() == MType.JOIN_ACCEPT;
   }
@@ -835,8 +839,8 @@ class LoraPacket {
   FRMPayload?: Buffer;
   JoinReqType?: Buffer;
   RejoinType?: Buffer;
-  RJcount0?: Buffer;
-  RJcount1?: Buffer;
+  RJCount0?: Buffer;
+  RJCount1?: Buffer;
 }
 
 export default LoraPacket;

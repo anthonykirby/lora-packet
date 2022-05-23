@@ -1,7 +1,7 @@
 import LoraPacket, { LorawanVersion } from "./LoraPacket";
 import { reverseBuffer } from "./util";
 import CryptoJS from "crypto-js";
-import {Buffer} from 'buffer';
+import { Buffer } from "buffer";
 
 const LORAIV = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
 
@@ -90,7 +90,6 @@ function decryptFOpts(payload: LoraPacket, NwkSEncKey: Buffer, fCntMSB32?: Buffe
 
   if (payload.getDir() == "up") {
     direction.writeUInt8(0, 0);
-
   } else if (payload.getDir() == "down") {
     direction.writeUInt8(1, 0);
     if (payload.FPort != null && payload.getFPort() > 0) {
@@ -197,9 +196,9 @@ function generateSessionKeys11(
   if (DevNonce.length !== 2) throw new Error("Expected a DevNonce with length 2");
   return {
     AppSKey: generateKey(AppKey, AppNonce, JoinEUI, DevNonce, KeyType11.AppSKey),
-    FNwkSIntKey: generateKey(AppKey, AppNonce, JoinEUI, DevNonce, KeyType11.FNwkSIntKey),
-    SNwkSIntKey: generateKey(AppKey, AppNonce, JoinEUI, DevNonce, KeyType11.SNwkSIntKey),
-    NwkSEncKey: generateKey(AppKey, AppNonce, JoinEUI, DevNonce, KeyType11.NwkSEncKey),
+    FNwkSIntKey: generateKey(NwkKey, AppNonce, JoinEUI, DevNonce, KeyType11.FNwkSIntKey),
+    SNwkSIntKey: generateKey(NwkKey, AppNonce, JoinEUI, DevNonce, KeyType11.SNwkSIntKey),
+    NwkSEncKey: generateKey(NwkKey, AppNonce, JoinEUI, DevNonce, KeyType11.NwkSEncKey),
   };
 }
 

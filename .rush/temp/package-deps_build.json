@@ -1,7 +1,0 @@
-{
-  "files": {
-    "libraries/lora-packet/.rush/temp/shrinkwrap-deps.json": "739362fff5bd0e48a34233d51cf5abfeff14cd67",
-    "libraries/lora-packet": "1674cb839dc3d52a006ac2dbbb0b46f2f53b04bc"
-  },
-  "arguments": "./node_modules/.bin/tsc "
-}

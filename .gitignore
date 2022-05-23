@@ -10,4 +10,5 @@ out/
 .eslintcache
 .npm
 *.tsbuildinfo
-
+.rush/
+lora-packet.build.log

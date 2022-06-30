@@ -142,4 +142,16 @@ describe("MIC checks", () => {
 
     expect(verifyMIC(packet, Buffer.from(NwkSKey_hex, "hex"), undefined, Buffer.from("0000", "hex"))).toBe(true);
   });
+
+  it("should calculate & verify MIC in port 0", () => {
+    const message_hex = "4006DC00FCC07400000244925050";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    const NwkSKey_hex = "581c4d08ef04cda30b1fef7a8b2c74b8";
+    const calculatedMIC = calculateMIC(packet, Buffer.from(NwkSKey_hex, "hex"), undefined, Buffer.from("0000", "hex"));
+    expect(calculatedMIC.toString("hex")).toBe("44925050");
+
+    expect(verifyMIC(packet, Buffer.from(NwkSKey_hex, "hex"), undefined, Buffer.from("0000", "hex"))).toBe(true);
+  });
+
 });

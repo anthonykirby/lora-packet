@@ -31,9 +31,9 @@ describe("generate session keys", () => {
       Buffer.from(DevNonce_hex, "hex")
     );
     expect(sessionKeys).not.toBeUndefined();
-    expect(sessionKeys.FNwkSIntKey.toString("hex")).toBe("4e3d6e6afbcc67af2ba3c8e8ec4acf4b");
-    expect(sessionKeys.SNwkSIntKey.toString("hex")).toBe("0e12e530a3933d40d0badb83cb70ef94");
-    expect(sessionKeys.NwkSEncKey.toString("hex")).toBe("840f680262e11730f45fa9f16fd5af7b");
+    expect(sessionKeys.FNwkSIntKey.toString("hex")).toBe("71674d0578777d66ecf8218a55ee9dd8");
+    expect(sessionKeys.SNwkSIntKey.toString("hex")).toBe("6c8aef5cc7fab065711b96f573664349");
+    expect(sessionKeys.NwkSEncKey.toString("hex")).toBe("e0a1bab82aa3874a3489d3a31436c5c5");
     expect(sessionKeys.AppSKey.toString("hex")).toBe("610897aa6f1460623443b527d3ac6a9d");
   });
 

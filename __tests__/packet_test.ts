@@ -628,7 +628,6 @@ describe("construct packet from fields", () => {
     expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
   });
 
-
   it("should encode packet with Lorawan11 (3. Mac-commands in FOpts (encrypted, using NFCntDown))", () => {
     const expectedPacket = Buffer.from([96, 4, 3, 2, 1, 3, 0, 0, 223, 180, 241, 226, 79, 31, 159]);
 
@@ -655,7 +654,6 @@ describe("construct packet from fields", () => {
     packet.encryptFOpts(NwkSEncKey, SNwkSIntKey);
 
     expect(packet.PHYPayload.toString("hex")).toStrictEqual(expectedPacket.toString("hex"));
-
   });
 
   it("should encode packet with Lorawan11 (4. Mac-commands in FOpts (encrypted, using AFCntDown encryption flag))", () => {

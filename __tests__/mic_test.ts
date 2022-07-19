@@ -65,7 +65,6 @@ describe("MIC checks", () => {
     expect(packet.MIC).toMatchObject(Buffer.from("f9d65d27", "hex"));
   });
 
-
   it("recalculateMIC should calculate & overwrite existing data packet MIC and Update PHYpayload & MACPayloadWithMIC", () => {
     const message_hex = "40f17dbe490002000195437876eeeeeeee";
     const exprected_PHYPayload = "40f17dbe4900020001954378762b11ff0d";
@@ -153,5 +152,4 @@ describe("MIC checks", () => {
 
     expect(verifyMIC(packet, Buffer.from(NwkSKey_hex, "hex"), undefined, Buffer.from("0000", "hex"))).toBe(true);
   });
-
 });

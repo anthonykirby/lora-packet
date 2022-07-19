@@ -55,5 +55,11 @@
   },
   "overrides": {
     "minimist": "^1.2.6"
-  }
+  },
+  contributors: [
+    {
+      "name" : "Kalik1",
+      "url" : "https://github.com/kalik1"
+    }
+  ]
 }

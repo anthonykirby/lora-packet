@@ -92,8 +92,7 @@ function calculateMIC(
       if (!payload.JoinReqType) throw new Error("Expected JoinReqType to be defined");
       if (!payload.JoinEUI) throw new Error("Expected JoinEUI to be defined");
       if (!payload.DevNonce) throw new Error("Expected DevNonce to be defined");
-      if (!NwkSKey || NwkSKey.length !== 16) throw new Error("Expected a NwkSKey with length 16");
-      cmacKey = NwkSKey;
+      cmacKey = AppKey;
       cmacInput = Buffer.concat([
         payload.JoinReqType,
         reverseBuffer(payload.JoinEUI),
@@ -180,8 +179,8 @@ function calculateMIC(
     const cmacInput = Buffer.concat([B0, payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let key = NwkSKey;
-    if (isDownlinkAndIs1_1) key = AppKey;
+    let key = NwkSKey; // SNwkSIntKey
+    if (isUplinkAndIs1_1) key = AppKey; // FNwkSIntKey; cmacF = aes128_cmac(FNwkSIntKey, B0 | msg)
     let fullCmac = new AesCmac(key).calculate(cmacInput);
     if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
 
@@ -201,7 +200,7 @@ function calculateMIC(
       ]);
 
       const cmacSInput = Buffer.concat([B1, payload.MHDR, payload.MACPayload]);
-      let fullCmacS = new AesCmac(AppKey).calculate(cmacSInput);
+      let fullCmacS = new AesCmac(NwkSKey).calculate(cmacSInput);
       if (!(fullCmacS instanceof Buffer)) fullCmacS = Buffer.from(fullCmacS);
 
       // only first 2 bytes of CMAC and CMACS are used as MIC

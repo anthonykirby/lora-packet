@@ -585,8 +585,8 @@ describe("construct packet from fields", () => {
         },
       },
       AppSKey,
-      FNwkSIntKey,
       SNwkSIntKey,
+      FNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
       //Buffer.alloc(4,0)
@@ -619,8 +619,8 @@ describe("construct packet from fields", () => {
         },
       },
       AppSKey,
-      FNwkSIntKey,
       SNwkSIntKey,
+      FNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
       //Buffer.alloc(4,0)
@@ -645,8 +645,8 @@ describe("construct packet from fields", () => {
         payload: Buffer.alloc(0),
       },
       AppSKey,
-      FNwkSIntKey,
       SNwkSIntKey,
+      FNwkSIntKey,
       undefined,
       undefined
     );
@@ -676,8 +676,8 @@ describe("construct packet from fields", () => {
         payload: Buffer.alloc(0),
       },
       AppSKey,
-      FNwkSIntKey,
       SNwkSIntKey,
+      FNwkSIntKey,
       undefined,
       confFCnt
     );
@@ -708,8 +708,8 @@ describe("construct packet from fields", () => {
         payload: macCommands,
       },
       NwkSEncKey,
-      FNwkSIntKey,
       SNwkSIntKey,
+      FNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
     );

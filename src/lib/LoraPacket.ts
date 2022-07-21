@@ -118,7 +118,7 @@ class LoraPacket {
       }
     } else if (payload._getMType() === MType.JOIN_ACCEPT) {
       if (AppKey?.length === 16) {
-        recalculateMIC(payload, AppKey /*NwkSKey*/, AppKey, FCntMSBytes);
+        recalculateMIC(payload, NwkSKey, AppKey, FCntMSBytes);
         payload._mergeGroupFields();
         const ciphertext = decryptJoin(payload, AppKey);
         // overwrite payload with ciphertext

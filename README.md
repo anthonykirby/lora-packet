@@ -197,8 +197,8 @@ The wire-format payload can be obtained by calling _getPHYPayload()_
 #### Lorawan 1.1
  in Lorawan 1.1 optional fields after `data` are:
 - NwkSEncKey,
+- SNwkSIntKey,
 - FNwkSIntKey,
-- SNwkSIntKey.
 - FCntMSBytes
 - ConfFCntDownTxDrTxCh
 

@@ -45,4 +45,53 @@ describe("generate session keys", () => {
     expect(sessionKeys.JSIntKey.toString("hex")).toBe("bd147194430d6fec1351a327ee40e264");
     expect(sessionKeys.JSEncKey.toString("hex")).toBe("8c61658dc01ee8add0c0becf90d2dc50");
   });
+
+  it("should generate valid session keys 1.1 with optNeg Unset", () => {
+    const AppKey_hex = "02020202020202020202020202020202";
+    const NwkKey_hex = "01010101010101010101010101010101";
+    const netId_hex = "600008";
+    const AppNonce_hex = "000058";
+    const DevNonce_hex = "e8b8";
+    const sessionKeys = generateSessionKeys11(
+      Buffer.from(AppKey_hex, "hex"),
+      Buffer.from(NwkKey_hex, "hex"),
+      Buffer.from(netId_hex, "hex"),
+      Buffer.from(AppNonce_hex, "hex"),
+      Buffer.from(DevNonce_hex, "hex")
+    );
+    expect(sessionKeys).not.toBeUndefined();
+    expect(sessionKeys.FNwkSIntKey.toString("hex")).toBe("f8153baa6d263662a65df022e00c8641");
+    expect(sessionKeys.SNwkSIntKey.toString("hex")).toBe("36976db6f2c27cbc308afac29266ff3f");
+    expect(sessionKeys.NwkSEncKey.toString("hex")).toBe("f1b65319dc2ee0c923321f5b135b1a33");
+    expect(sessionKeys.AppSKey.toString("hex")).toBe("ed98df8fa357f5ac02c2afb6c22f4218");
+  });
+
+  it("should generate valid session keys 1.1 Broccar parameters with OptNeg Set", () => {
+    const AppKey_hex = "01000000000000000000000000000001";
+    const NwkKey_hex = "00000000000000000000000000000001";
+    const joinEui_hex = "0000000000000001";
+    const AppNonce_hex = "000003";
+    const DevNonce_hex = "E8C2";
+    const sessionKeys = generateSessionKeys11(
+      Buffer.from(AppKey_hex, "hex"),
+      Buffer.from(NwkKey_hex, "hex"),
+      Buffer.from(joinEui_hex, "hex"),
+      Buffer.from(AppNonce_hex, "hex"),
+      Buffer.from(DevNonce_hex, "hex")
+    );
+    expect(sessionKeys).not.toBeUndefined();
+    expect(sessionKeys.FNwkSIntKey.toString("hex")).toBe("BBD966509BE6435F4BCB63ACC310466A".toLowerCase());
+    expect(sessionKeys.SNwkSIntKey.toString("hex")).toBe("DEA9E621C747AF79A65F82DCAED92A99".toLowerCase());
+    expect(sessionKeys.NwkSEncKey.toString("hex")).toBe("C8EEFDA7400395C94AB072E9C353B29D".toLowerCase());
+    expect(sessionKeys.AppSKey.toString("hex")).toBe("EB45A0A167B6F1CCCB9A678D761C0B03".toLowerCase());
+  });
+
+  it("should generate JS keys in 1.1", () => {
+    const NwkKey_hex = "01010101010101010101010101010101";
+    const DevEui_hex = "0000000000000001";
+    const sessionKeys = generateJSKeys(Buffer.from(NwkKey_hex, "hex"), Buffer.from(DevEui_hex, "hex"));
+    expect(sessionKeys).not.toBeUndefined();
+    expect(sessionKeys.JSIntKey.toString("hex")).toBe("6b9cc9b000daebb610f1e39758cf69df");
+    expect(sessionKeys.JSEncKey.toString("hex")).toBe("c31fa11abb646ee1c21d5835815528ea");
+  });
 });

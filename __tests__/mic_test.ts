@@ -1,5 +1,6 @@
 import LoraPayload from "../src/lib/LoraPacket";
 import { calculateMIC, verifyMIC, recalculateMIC } from "../src/lib/mic";
+import loraPacket from "../src/lib/LoraPacket";
 
 describe("MIC checks", () => {
   it("should calculate & verify correct data packet MIC", () => {
@@ -151,5 +152,69 @@ describe("MIC checks", () => {
     expect(calculatedMIC.toString("hex")).toBe("44925050");
 
     expect(verifyMIC(packet, Buffer.from(NwkSKey_hex, "hex"), undefined, Buffer.from("0000", "hex"))).toBe(true);
+  });
+
+  it("should calculate & verify MIC when 1.0 are used (Matteo Packets)", () => {
+    const message_hex = "40F7EC10E081000002015A171220B0C6D6470FC3";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    const NwkSKey = "17da125f3d55b28cc16a8111bd1d6c0b";
+    const AppKey = "29b27ce00db3957660e7a2f5f47c016f";
+
+    const calculatedMIC = calculateMIC(
+      packet,
+      Buffer.from(NwkSKey, "hex"),
+      Buffer.from(AppKey, "hex"),
+      Buffer.from("0000", "hex")
+    );
+
+    expect(calculatedMIC.toString("hex")).toBe("D6470FC3".toLowerCase());
+    // }
+
+    // const calculatedMIC = calculateMIC(packet, Buffer.from(SNwkSIntKey_hex, "hex"), Buffer.from(FNwkSIntKey_hex, "hex"), Buffer.from("0000", "hex"), ConfFCntDownTxDrTxCh);
+    // expect(calculatedMIC.toString("hex")).toBe("67349eae");
+
+    //expect(verifyMIC(packet, Buffer.from(SNwkSIntKey_hex, "hex"), Buffer.from(FNwkSIntKey_hex, "hex"), Buffer.from("0000", "hex"))).toBe(true);
+  });
+
+  it("should calculate & verify correct join request packet MIC in 1.1", () => {
+    const message_hex = "00010000000000000001000000000000000ce83685eb17";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    const nwkKey_hex = "01010101010101010101010101010101";
+    const calculatedMIC = calculateMIC(packet, undefined, Buffer.from(nwkKey_hex, "hex"));
+    expect(calculatedMIC.toString("hex")).toBe("3685eb17");
+    expect(verifyMIC(packet, undefined, Buffer.from(nwkKey_hex, "hex"))).toBe(true);
+  });
+
+  it("should calculate & verify incorrect join request packet MIC in 1.1", () => {
+    const message_hex = "00010000000000000001000000000000000ce83685eb17";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    const appKey_hex = "02020202020202020202020202020202";
+    const calculatedMIC = calculateMIC(packet, undefined, Buffer.from(appKey_hex, "hex"));
+    expect(calculatedMIC.toString("hex")).not.toBe("3685eb17");
+    expect(verifyMIC(packet, undefined, Buffer.from(appKey_hex, "hex"))).not.toBe(true);
+  });
+
+  it("should calculate & verify correct unconfirmed data up packet MIC 1.1", () => {
+    const message_hex = "40736310e080000000c86c36165131";
+    const packet = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
+
+    const FNwkSIntKey_hex = Buffer.from("e163635133105cc690cb2d57ba9c31b9", "hex");
+    const SNwkSIntKey_hex = Buffer.from("05ec7c795b2f0b5bcdfa710db52b9d8f", "hex");
+
+    const calculatedMIC = calculateMIC(
+      packet,
+      FNwkSIntKey_hex,
+      SNwkSIntKey_hex,
+      Buffer.from("0000", "hex"),
+      Buffer.from("00000001", "hex")
+    );
+    expect(calculatedMIC.toString("hex")).toBe("36165131");
+
+    expect(
+      verifyMIC(packet, FNwkSIntKey_hex, SNwkSIntKey_hex, Buffer.from("0000", "hex"), Buffer.from("00000001", "hex"))
+    ).toBe(true);
   });
 });

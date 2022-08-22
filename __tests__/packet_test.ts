@@ -514,7 +514,7 @@ describe("construct packet from fields", () => {
         RxDelay: Buffer.from("00", "hex"),
       },
       undefined,
-      undefined,
+      NwkKey,
       NwkKey
     );
 
@@ -585,8 +585,8 @@ describe("construct packet from fields", () => {
         },
       },
       AppSKey,
-      SNwkSIntKey,
       FNwkSIntKey,
+      SNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
       //Buffer.alloc(4,0)
@@ -619,8 +619,8 @@ describe("construct packet from fields", () => {
         },
       },
       AppSKey,
-      SNwkSIntKey,
       FNwkSIntKey,
+      SNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
       //Buffer.alloc(4,0)
@@ -676,8 +676,8 @@ describe("construct packet from fields", () => {
         payload: Buffer.alloc(0),
       },
       AppSKey,
-      SNwkSIntKey,
       FNwkSIntKey,
+      SNwkSIntKey,
       undefined,
       confFCnt
     );
@@ -708,8 +708,8 @@ describe("construct packet from fields", () => {
         payload: macCommands,
       },
       NwkSEncKey,
-      SNwkSIntKey,
       FNwkSIntKey,
+      SNwkSIntKey,
       undefined,
       Buffer.concat([confFCnt, txDR, txCh])
     );

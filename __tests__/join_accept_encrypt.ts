@@ -57,12 +57,13 @@ describe("construct join accept from fields and encrypt", () => {
   });
 
   // https://github.com/brocaar/lorawan/blob/master/phypayload_test.go
-  it("should create join accept as in brocaar/lorawan", () => {
+  it("should create join accept as in brocaar/lorawan 1.1", () => {
     const appKey = Buffer.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]);
     const JoinEUI = Buffer.from([8, 7, 6, 5, 4, 3, 2, 1]);
 
     const packet = LoraPayload.fromFields(
       {
+        MType: "Join Accept",
         AppNonce: Buffer.from("010101", "hex"),
         DevNonce: Buffer.from("0102", "hex"),
         AppEUI: JoinEUI,
@@ -72,7 +73,7 @@ describe("construct join accept from fields and encrypt", () => {
         RxDelay: 0,
       },
       null,
-      null,
+      appKey,
       appKey
     );
 

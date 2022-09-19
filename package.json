@@ -1,6 +1,6 @@
 {
   "name": "lora-packet",
-  "version": "0.8.15",
+  "version": "0.8.17",
   "author": "Anthony Kirby",
   "description": "LoRa packet decoder/encoder",
   "keywords": [
@@ -33,6 +33,7 @@
     "lora-packet-decode": "./out/cli.js"
   },
   "dependencies": {
+    "@types/jest": "27.5.1",
     "aes-cmac": "1.0.3",
     "crypto-js": "4.1.1"
   },
@@ -54,5 +55,11 @@
   },
   "overrides": {
     "minimist": "^1.2.6"
-  }
+  },
+  "contributors": [
+    {
+      "name" : "Kalik1",
+      "url" : "https://github.com/kalik1"
+    }
+  ]
 }

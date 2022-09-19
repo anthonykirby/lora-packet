@@ -243,7 +243,7 @@ describe("parse example payload", () => {
     expect(parsed.getMType()).toBe("Proprietary");
   });
 
-  it("should parse RFU packets", () => {
+  it("should parse Rejoin Request packets", () => {
     const message_hex = "C0008B658839";
 
     const expectedPayload = {
@@ -257,6 +257,6 @@ describe("parse example payload", () => {
     const parsed = LoraPayload.fromWire(Buffer.from(message_hex, "hex"));
 
     expect(parsed).toMatchObject(expectedPayload);
-    expect(parsed.getMType()).toBe("RFU");
+    expect(parsed.getMType()).toBe("Rejoin Request");
   });
 });

@@ -4,7 +4,6 @@ import { calculateMIC } from "../src/lib/mic";
 import { decrypt, decryptFOpts } from "../src/lib/crypto";
 
 describe("parse packets from github issue #18", () => {
-  // https://pkg.go.dev/github.com/brocaar/lorawan#pkg-examples
   it("should parse packet #1", () => {
     const message_hex = "4084412505A3010009110308B33750F504D4B86A";
 

@@ -291,6 +291,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.19 bump decode-uri-component 0.2.2, json5 2.2.3 (CVE–2022–46175)
 - 0.8.18 bump minimatch 3.1.2 (CVE-2022-3517)
 - 0.8.17 add support for LoRaWAN 1.1
 - 0.8.15 bump minimist 1.2.6 (CVE-2021-44906/CVE-2020-7598)

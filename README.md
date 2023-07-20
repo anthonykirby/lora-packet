@@ -291,6 +291,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.20 bump tough-cookie to 4.1.3, word-wrap to 1.2.4
 - 0.8.19 bump decode-uri-component 0.2.2, json5 2.2.3 (CVE–2022–46175)
 - 0.8.18 bump minimatch 3.1.2 (CVE-2022-3517)
 - 0.8.17 add support for LoRaWAN 1.1

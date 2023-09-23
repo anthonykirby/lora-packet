@@ -208,7 +208,7 @@ function generateSessionKeys11(
 }
 
 function generateJSKeys(NwkKey: Buffer, DevEui: Buffer): { JSIntKey: Buffer; JSEncKey: Buffer } {
-  if (DevEui.length !== 8) throw new Error("Expected a DevEui with length 16");
+  if (DevEui.length !== 8) throw new Error("Expected a DevEui with length 8");
   if (NwkKey.length !== 16) throw new Error("Expected a NwkKey with length 16");
   return {
     JSIntKey: generateKey(NwkKey, DevEui, Buffer.alloc(0), Buffer.alloc(0), KeyTypeJS.JSIntKey),

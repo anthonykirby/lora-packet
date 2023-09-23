@@ -1,4 +1,4 @@
-import { generateJSKeys, generateSessionKeys, generateSessionKeys11 } from "../src/lib/crypto";
+import { generateJSKeys, generateSessionKeys, generateSessionKeys11, generateWORKey, generateWORSessionKeys } from "../src/lib/crypto";
 
 describe("generate session keys", () => {
   it("should generate valid session keys 1.0", () => {
@@ -44,6 +44,22 @@ describe("generate session keys", () => {
     expect(sessionKeys).not.toBeUndefined();
     expect(sessionKeys.JSIntKey.toString("hex")).toBe("bd147194430d6fec1351a327ee40e264");
     expect(sessionKeys.JSEncKey.toString("hex")).toBe("8c61658dc01ee8add0c0becf90d2dc50");
+  });
+
+  it("should generate WOR Root key", () => {
+    const WORRootKey = "987b94c9e254bee0546bb23403492d34";
+    const sessionKeys = generateWORKey(Buffer.from(WORRootKey, "hex"));
+    expect(sessionKeys).not.toBeUndefined();
+    expect(sessionKeys.RootWorSKey.toString("hex")).toBe("df6c096ba343b7a38a32bec967f03453");
+  });
+
+  it("should generate WOR Session keys", () => {
+    const WORRootKey = "4576856befa0832347560cb120a01f43";
+    const DevAddr_hex = "012345678";
+    const sessionKeys = generateWORSessionKeys(Buffer.from(WORRootKey, "hex"), Buffer.from(DevAddr_hex, "hex"));
+    expect(sessionKeys).not.toBeUndefined();
+    expect(sessionKeys.WorSEncKey.toString("hex")).toBe("6bcb83f1ac19644c692b0276cff8ce9d");
+    expect(sessionKeys.WorSIntKey.toString("hex")).toBe("c43c318072edabc1e06fe5e93e7d663d");
   });
 
   it("should generate valid session keys 1.1 with optNeg Unset", () => {

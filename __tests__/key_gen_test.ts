@@ -1,4 +1,10 @@
-import { generateJSKeys, generateSessionKeys, generateSessionKeys11, generateWORKey, generateWORSessionKeys } from "../src/lib/crypto";
+import {
+  generateJSKeys,
+  generateSessionKeys,
+  generateSessionKeys11,
+  generateWORKey,
+  generateWORSessionKeys,
+} from "../src/lib/crypto";
 
 describe("generate session keys", () => {
   it("should generate valid session keys 1.0", () => {

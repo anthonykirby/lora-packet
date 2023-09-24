@@ -6,6 +6,8 @@ import {
   encrypt,
   generateSessionKeys11,
   generateSessionKeys10,
+  generateWORSessionKeys,
+  generateWORKey,
   generateJSKeys,
 } from "./lib/crypto";
 import { calculateMIC, recalculateMIC, verifyMIC } from "./lib/mic";
@@ -19,6 +21,8 @@ const modules = {
   generateSessionKeys,
   generateSessionKeys10,
   generateSessionKeys11,
+  generateWORSessionKeys,
+  generateWORKey,
   generateJSKeys,
   decryptJoinAccept,
   encrypt,

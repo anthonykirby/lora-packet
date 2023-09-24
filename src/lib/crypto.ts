@@ -22,6 +22,11 @@ enum KeyTypeJS {
   JSEncKey = "05",
 }
 
+enum KeyTypeWORSession {
+  WorSIntKey = "01",
+  WorSEncKey = "02",
+}
+
 function decrypt(payload: LoraPacket, AppSKey?: Buffer, NwkSKey?: Buffer, fCntMSB32?: Buffer): Buffer {
   if (!payload.PHYPayload || !payload.FRMPayload) throw new Error("Payload was not defined");
 
@@ -138,7 +143,7 @@ function generateKey(
   AppNonce: Buffer,
   NetIdOrJoinEui: Buffer,
   DevNonce: Buffer,
-  keyType: KeyType11 | KeyType10 | KeyTypeJS
+  keyType: KeyType11 | KeyType10 | KeyTypeJS | KeyTypeWORSession
 ): Buffer {
   let keyNonceStr: string = keyType;
   keyNonceStr += reverseBuffer(AppNonce).toString("hex");
@@ -203,11 +208,27 @@ function generateSessionKeys11(
 }
 
 function generateJSKeys(NwkKey: Buffer, DevEui: Buffer): { JSIntKey: Buffer; JSEncKey: Buffer } {
-  if (DevEui.length !== 8) throw new Error("Expected a DevEui with length 16");
+  if (DevEui.length !== 8) throw new Error("Expected a DevEui with length 8");
   if (NwkKey.length !== 16) throw new Error("Expected a NwkKey with length 16");
   return {
     JSIntKey: generateKey(NwkKey, DevEui, Buffer.alloc(0), Buffer.alloc(0), KeyTypeJS.JSIntKey),
     JSEncKey: generateKey(NwkKey, DevEui, Buffer.alloc(0), Buffer.alloc(0), KeyTypeJS.JSEncKey),
+  };
+}
+
+function generateWORKey(NwkSKey: Buffer): { RootWorSKey: Buffer } {
+  if (NwkSKey.length !== 16) throw new Error("Expected a NwkKey/NwkSEncKey with length 16");
+  return {
+    RootWorSKey: generateKey(NwkSKey, Buffer.alloc(0), Buffer.alloc(0), Buffer.alloc(0), KeyTypeWORSession.WorSIntKey),
+  };
+}
+
+function generateWORSessionKeys(RootWorSKey: Buffer, DevAddr: Buffer): { WorSIntKey: Buffer; WorSEncKey: Buffer } {
+  if (DevAddr.length !== 4) throw new Error("Expected a DevAddr with length 4");
+  if (RootWorSKey.length !== 16) throw new Error("Expected a RootWorSKey with length 16");
+  return {
+    WorSIntKey: generateKey(RootWorSKey, DevAddr, Buffer.alloc(0), Buffer.alloc(0), KeyTypeWORSession.WorSIntKey),
+    WorSEncKey: generateKey(RootWorSKey, DevAddr, Buffer.alloc(0), Buffer.alloc(0), KeyTypeWORSession.WorSEncKey),
   };
 }
 
@@ -278,5 +299,7 @@ export {
   generateSessionKeys,
   generateSessionKeys11,
   generateSessionKeys10,
+  generateWORKey,
+  generateWORSessionKeys,
   generateJSKeys,
 };

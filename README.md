@@ -291,6 +291,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.23 bump @babel/traverse to 7.23.2
 - 0.8.22 add WOR keys
 - 0.8.21 bump semver
 - 0.8.20 bump tough-cookie to 4.1.3, word-wrap to 1.2.4

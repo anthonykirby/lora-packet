@@ -1,5 +1,5 @@
-import LoraPacket, { LorawanVersion } from "./LoraPacket";
-import { reverseBuffer } from "./util";
+import LoraPacket, { LorawanVersion } from "./LoraPacket.js";
+import { reverseBuffer } from "./util.js";
 
 import { AesCmac } from "aes-cmac";
 import { Buffer } from "buffer";

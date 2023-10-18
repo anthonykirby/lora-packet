@@ -7,11 +7,11 @@
     "target": "ES2017",
     "allowJs": false,
     "moduleResolution": "node",
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "resolveJsonModule": true,
     "lib": ["ES2017", "DOM"]
   },

@@ -32,4 +32,3 @@ const modules = {
 };
 
 export default modules;
-module.exports = modules;

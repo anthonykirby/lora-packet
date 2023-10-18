@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./out",
+    "outDir": "./cjs",
     "rootDir": "./src",
     "noImplicitAny": true,
     "module": "commonjs",

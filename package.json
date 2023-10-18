@@ -32,6 +32,7 @@
     "build-esm": "rm -rf ./esm; npx tsc --module es2022 --outDir esm/; echo '{\"type\": \"module\"}' > esm/package.json",
     "test": "npx jest",
     "prepublishOnly": "npx eslint .; npm run build; npm run build-esm",
+    "prepare": "npm run build; npm run build-esm",
     "linter": "npx ."
   },
   "bin": {

@@ -1,5 +1,5 @@
 "use strict";
-const lora_packet = require("../out/lib.js");
+const lora_packet = require("../cjs/lib.js");
 // const lora_packet = require("lora-packet");
 
 //-----------------

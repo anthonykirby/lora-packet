@@ -1,6 +1,6 @@
-import { reverseBuffer, asHexString } from "./util";
-import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
-import { recalculateMIC } from "./mic";
+import { reverseBuffer, asHexString } from "./util.js";
+import { decrypt, decryptJoin, decryptFOpts } from "./crypto.js";
+import { recalculateMIC } from "./mic.js";
 import { Buffer } from "buffer";
 
 enum MType {

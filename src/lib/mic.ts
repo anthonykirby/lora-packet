@@ -1,5 +1,5 @@
-import LoraPacket, { LorawanVersion } from "./LoraPacket";
-import { reverseBuffer } from "./util";
+import LoraPacket, { LorawanVersion } from "./LoraPacket.js";
+import { reverseBuffer } from "./util.js";
 
 import { AesCmac } from "aes-cmac";
 import { Buffer } from "buffer";
@@ -28,8 +28,7 @@ function calculateMIC(
     const cmacInput = Buffer.concat([payload.MHDR, payload.MACPayload]);
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = new AesCmac(AppKey).calculate(cmacInput);
-    if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
+    const fullCmac = Buffer.from(new AesCmac(AppKey).calculate(cmacInput));
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
 
@@ -53,8 +52,7 @@ function calculateMIC(
 
     // CMAC calculation (as RFC4493)
     const calcKey = payload.RejoinType[0] === 1 ? AppKey : NwkSKey;
-    let fullCmac = new AesCmac(calcKey).calculate(cmacInput);
-    if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
+    const fullCmac = Buffer.from(new AesCmac(calcKey).calculate(cmacInput));
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
 
@@ -104,8 +102,7 @@ function calculateMIC(
     }
 
     // CMAC calculation (as RFC4493)
-    let fullCmac = new AesCmac(cmacKey).calculate(cmacInput);
-    if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
+    const fullCmac = Buffer.from(new AesCmac(cmacKey).calculate(cmacInput));
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
 
@@ -182,9 +179,7 @@ function calculateMIC(
     // CMAC calculation (as RFC4493)
     let key = NwkSKey;
     if (isDownlinkAndIs1_1) key = AppKey;
-    let fullCmac = new AesCmac(key).calculate(cmacInput);
-    if (!(fullCmac instanceof Buffer)) fullCmac = Buffer.from(fullCmac);
-
+    const fullCmac = Buffer.from(new AesCmac(key).calculate(cmacInput));
     // only first 4 bytes of CMAC are used as MIC
     const MIC = fullCmac.slice(0, 4);
 
@@ -201,9 +196,7 @@ function calculateMIC(
       ]);
 
       const cmacSInput = Buffer.concat([B1, payload.MHDR, payload.MACPayload]);
-      let fullCmacS = new AesCmac(AppKey).calculate(cmacSInput);
-      if (!(fullCmacS instanceof Buffer)) fullCmacS = Buffer.from(fullCmacS);
-
+      const fullCmacS = Buffer.from(new AesCmac(AppKey).calculate(cmacSInput));
       // only first 2 bytes of CMAC and CMACS are used as MIC
       const MICS = fullCmacS.slice(0, 4);
 

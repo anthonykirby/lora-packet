@@ -1,7 +1,10 @@
-import LoraPacket, { LorawanVersion } from "./LoraPacket";
-import { reverseBuffer } from "./util";
-import CryptoJS from "crypto-js";
+import LoraPacket from "./LoraPacket.js";
+import { reverseBuffer } from "./util.js";
+import * as CryptoJSImp from "crypto-js";
 import { Buffer } from "buffer";
+
+// ESM shenanigans, as CryptoJS is a CJS module
+const CryptoJS = "default" in CryptoJSImp ? (CryptoJSImp.default as typeof CryptoJSImp) : CryptoJSImp;
 
 const LORAIV = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
 

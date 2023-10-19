@@ -12,3 +12,5 @@ out/
 *.tsbuildinfo
 .rush/
 lora-packet.build.log
+cjs/
+esm/

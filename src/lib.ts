@@ -9,9 +9,9 @@ import {
   generateWORSessionKeys,
   generateWORKey,
   generateJSKeys,
-} from "./lib/crypto";
-import { calculateMIC, recalculateMIC, verifyMIC } from "./lib/mic";
-import LoraPacket from "./lib/LoraPacket";
+} from "./lib/crypto.js";
+import { calculateMIC, recalculateMIC, verifyMIC } from "./lib/mic.js";
+import LoraPacket from "./lib/LoraPacket.js";
 
 const modules = {
   fromWire: LoraPacket.fromWire,
@@ -32,4 +32,4 @@ const modules = {
 };
 
 export default modules;
-module.exports = modules;
+export { LoraPacket };

@@ -291,6 +291,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.8.24 bump crypto-js to 4.2.0 (CVE-2023-46233)
 - 0.8.23 bump @babel/traverse to 7.23.2
 - 0.8.22 add WOR keys
 - 0.8.21 bump semver

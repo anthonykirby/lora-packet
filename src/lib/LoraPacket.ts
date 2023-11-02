@@ -43,7 +43,7 @@ const MTYPE_DESCRIPTIONS = [
   "Proprietary",
 ];
 
-export interface IUserFields {
+export interface UserFields {
   CFList?: Buffer;
   RxDelay?: Buffer | number;
   DLSettings?: Buffer | number;
@@ -75,7 +75,7 @@ class LoraPacket {
   }
 
   static fromFields(
-    fields: IUserFields,
+    fields: UserFields,
     AppSKey?: Buffer,
     NwkSKey?: Buffer,
     AppKey?: Buffer,
@@ -190,7 +190,7 @@ class LoraPacket {
     }
   }
 
-  private _initFromFields(userFields: IUserFields): void {
+  private _initFromFields(userFields: UserFields): void {
     if (typeof userFields.MType !== "undefined") {
       let MTypeNo;
       if (typeof userFields.MType === "number") {
@@ -264,7 +264,7 @@ class LoraPacket {
     }
   }
 
-  private _initialiseDataPacketFromFields(userFields: IUserFields): void {
+  private _initialiseDataPacketFromFields(userFields: UserFields): void {
     if (userFields.DevAddr && userFields.DevAddr.length == 4) {
       this.DevAddr = Buffer.from(userFields.DevAddr);
     } else {
@@ -371,7 +371,7 @@ class LoraPacket {
     this._mergeGroupFields();
   }
 
-  private _initialiseJoinRequestPacketFromFields(userFields: IUserFields): void {
+  private _initialiseJoinRequestPacketFromFields(userFields: UserFields): void {
     if (userFields.AppEUI && userFields.AppEUI.length == 8) {
       this.AppEUI = Buffer.from(userFields.AppEUI);
     } else {
@@ -410,7 +410,7 @@ class LoraPacket {
     this._mergeGroupFields();
   }
 
-  private _initialiseJoinAcceptPacketFromFields(userFields: IUserFields): void {
+  private _initialiseJoinAcceptPacketFromFields(userFields: UserFields): void {
     if (userFields.AppNonce && userFields.AppNonce.length == 3) {
       this.AppNonce = Buffer.from(userFields.AppNonce);
     } else {

@@ -510,14 +510,14 @@ class LoraPacket {
 
   public isDataMessage(): boolean {
     const mtype = this._getMType();
-    if (mtype >= MType.UNCONFIRMED_DATA_UP && mtype <= MType.CONFIRMED_DATA_DOWN) return true;
-    return false;
+    return mtype >= MType.UNCONFIRMED_DATA_UP && mtype <= MType.CONFIRMED_DATA_DOWN;
+
   }
 
   public isConfirmed(): boolean {
     const mtype = this._getMType();
-    if (mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP) return true;
-    return false;
+    return mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP;
+
   }
 
   /**

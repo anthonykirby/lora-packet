@@ -17,7 +17,7 @@ enum LorawanVersion {
   V1_0 = "1.0",
   V1_1 = "1.1",
 }
-enum Constants {
+enum Masks {
   FCTRL_ADR = 0x80,
   FCTRL_ADRACKREQ = 0x40,
   FCTRL_ACK = 0x20,
@@ -322,16 +322,16 @@ class LoraPacket {
 
     let fctrl = 0;
     if (userFields.FCtrl?.ADR) {
-      fctrl |= Constants.FCTRL_ADR;
+      fctrl |= Masks.FCTRL_ADR;
     }
     if (userFields.FCtrl?.ADRACKReq) {
-      fctrl |= Constants.FCTRL_ADRACKREQ;
+      fctrl |= Masks.FCTRL_ADRACKREQ;
     }
     if (userFields.FCtrl?.ACK) {
-      fctrl |= Constants.FCTRL_ACK;
+      fctrl |= Masks.FCTRL_ACK;
     }
     if (userFields.FCtrl?.FPending) {
-      fctrl |= Constants.FCTRL_FPENDING;
+      fctrl |= Masks.FCTRL_FPENDING;
     }
 
     fctrl |= this.FOpts.length & 0x0f;
@@ -558,7 +558,7 @@ class LoraPacket {
    */
   public getFCtrlACK(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ACK);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ACK);
   }
 
   /**
@@ -566,7 +566,7 @@ class LoraPacket {
    */
   public getFCtrlADR(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ADR);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ADR);
   }
 
   /**
@@ -574,7 +574,7 @@ class LoraPacket {
    */
   public getFCtrlADRACKReq(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ADRACKREQ);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ADRACKREQ);
   }
 
   /**
@@ -582,7 +582,7 @@ class LoraPacket {
    */
   public getFCtrlFPending(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_FPENDING);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_FPENDING);
   }
 
   /**
@@ -591,7 +591,7 @@ class LoraPacket {
   public getDLSettingsRxOneDRoffset(): number | null {
     if (!this.DLSettings) return null;
     return (
-      (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_RXONEDROFFSET_MASK) >> Constants.DLSETTINGS_RXONEDROFFSET_POS
+      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXONEDROFFSET_MASK) >> Masks.DLSETTINGS_RXONEDROFFSET_POS
     );
   }
 
@@ -601,7 +601,7 @@ class LoraPacket {
   public getDLSettingsRxTwoDataRate(): number | null {
     if (!this.DLSettings) return null;
     return (
-      (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_RXTWODATARATE_MASK) >> Constants.DLSETTINGS_RXTWODATARATE_POS
+      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXTWODATARATE_MASK) >> Masks.DLSETTINGS_RXTWODATARATE_POS
     );
   }
 
@@ -610,7 +610,7 @@ class LoraPacket {
    */
   public getDLSettingsOptNeg(): boolean | null {
     if (!this.DLSettings) return null;
-    return (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_OPTNEG_MASK) >> Constants.DLSETTINGS_OPTNEG_POS === 1;
+    return (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_OPTNEG_MASK) >> Masks.DLSETTINGS_OPTNEG_POS === 1;
   }
 
   /**
@@ -618,7 +618,7 @@ class LoraPacket {
    */
   public getRxDelayDel(): number | null {
     if (!this.RxDelay) return null;
-    return (this.RxDelay.readUInt8(0) & Constants.RXDELAY_DEL_MASK) >> Constants.RXDELAY_DEL_POS;
+    return (this.RxDelay.readUInt8(0) & Masks.RXDELAY_DEL_MASK) >> Masks.RXDELAY_DEL_POS;
   }
 
   /**

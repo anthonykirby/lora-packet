@@ -91,7 +91,7 @@ class LoraPacket {
 
       const port = payload.getFPort();
 
-      if (port != null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
+      if (port !== null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
         // crypto is reversible (just XORs FRMPayload), so we can
         //  just do "decrypt" on the plaintext to get ciphertext
 

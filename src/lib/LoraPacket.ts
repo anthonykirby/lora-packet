@@ -179,22 +179,24 @@ class LoraPacket {
         this.RJCount1 = reverseBuffer(incoming.slice(13, 13 + 2));
       }
     } else if (this.isDataMessage()) {
-      this.FCtrl = this.MACPayload.slice(4, 5);
+      this.FCtrl = reverseBuffer(incoming.slice(5, 6))
+      // this.FCtrl = this.MACPayload.slice(4, 5);
       const FCtrl = this.FCtrl.readInt8(0);
       const FOptsLen = FCtrl & 0x0f;
-      this.FOpts = this.MACPayload.slice(7, 7 + FOptsLen);
+      this.FOpts = incoming.slice(8, 8 + FOptsLen)
+      // this.FOpts = this.MACPayload.slice(7, 7 + FOptsLen);
       const FHDR_length = 7 + FOptsLen;
-      this.FHDR = this.MACPayload.slice(0, 0 + FHDR_length);
-      this.DevAddr = reverseBuffer(this.FHDR.slice(0, 4));
+      this.FHDR = incoming.slice(1, 1 + FHDR_length);
+      this.DevAddr = reverseBuffer(incoming.slice(1, 5));
 
-      this.FCnt = reverseBuffer(this.FHDR.slice(5, 7));
+      this.FCnt = reverseBuffer(incoming.slice(6, 8));
 
       if (FHDR_length == this.MACPayload.length) {
         this.FPort = Buffer.alloc(0);
         this.FRMPayload = Buffer.alloc(0);
       } else {
-        this.FPort = this.MACPayload.slice(FHDR_length, FHDR_length + 1);
-        this.FRMPayload = this.MACPayload.slice(FHDR_length + 1);
+        this.FPort = incoming.slice(FHDR_length + 1, FHDR_length + 2);
+        this.FRMPayload = incoming.slice(FHDR_length + 2, incoming.length - 4);
       }
     }
   }

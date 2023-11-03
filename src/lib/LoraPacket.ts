@@ -4,14 +4,33 @@ import { recalculateMIC } from "./mic";
 import { Buffer } from "buffer";
 
 enum MType {
-  JOIN_REQUEST,
-  JOIN_ACCEPT,
-  UNCONFIRMED_DATA_UP,
-  UNCONFIRMED_DATA_DOWN,
-  CONFIRMED_DATA_UP,
-  CONFIRMED_DATA_DOWN,
-  REJOIN_REQUEST,
+  JOIN_REQUEST = 0,
+  JOIN_ACCEPT = 1,
+  UNCONFIRMED_DATA_UP = 2,
+  UNCONFIRMED_DATA_DOWN = 3,
+  CONFIRMED_DATA_UP = 4,
+  CONFIRMED_DATA_DOWN = 5,
+  REJOIN_REQUEST = 6,
 }
+
+const MTYPE_DESCRIPTIONS: { [key: number]: string } = {
+  [MType.JOIN_REQUEST]: "Join Request",
+  [MType.JOIN_ACCEPT]: "Join Accept",
+  [MType.UNCONFIRMED_DATA_UP]: "Unconfirmed Data Up",
+  [MType.UNCONFIRMED_DATA_DOWN]: "Unconfirmed Data Down",
+  [MType.CONFIRMED_DATA_UP]: "Confirmed Data Up",
+  [MType.CONFIRMED_DATA_DOWN]: "Confirmed Data Down",
+  [MType.REJOIN_REQUEST]: "Rejoin Request",
+};
+
+
+const DESCRIPTIONS_MTYPE: { [description: string]: MType } = Object.keys(MTYPE_DESCRIPTIONS)
+  .reduce((acc, key) => {
+    const mTypeKey = key as unknown as MType; // Cast the key to MType
+    const description = MTYPE_DESCRIPTIONS[mTypeKey];
+    acc[description] = mTypeKey;
+    return acc;
+  }, {} as { [description: string]: MType });
 
 enum LorawanVersion {
   V1_0 = "1.0",
@@ -32,16 +51,6 @@ enum Masks {
   RXDELAY_DEL_POS = 0,
 }
 
-const MTYPE_DESCRIPTIONS = [
-  "Join Request",
-  "Join Accept",
-  "Unconfirmed Data Up",
-  "Unconfirmed Data Down",
-  "Confirmed Data Up",
-  "Confirmed Data Down",
-  "Rejoin Request",
-  "Proprietary",
-];
 
 export interface UserFields {
   CFList?: Buffer;
@@ -196,7 +205,7 @@ class LoraPacket {
       if (typeof userFields.MType === "number") {
         MTypeNo = userFields.MType;
       } else if (typeof userFields.MType == "string") {
-        const mhdr_idx = MTYPE_DESCRIPTIONS.indexOf(userFields.MType);
+        const mhdr_idx = DESCRIPTIONS_MTYPE[userFields.MType];
         if (mhdr_idx >= 0) {
           MTypeNo = mhdr_idx;
         } else {
@@ -282,7 +291,7 @@ class LoraPacket {
         this.MHDR = Buffer.alloc(1);
         this.MHDR.writeUInt8(userFields.MType << 5, 0);
       } else if (typeof userFields.MType === "string") {
-        const mhdr_idx = MTYPE_DESCRIPTIONS.indexOf(userFields.MType);
+        const mhdr_idx = DESCRIPTIONS_MTYPE[userFields.MType];
         if (mhdr_idx >= 0) {
           this.MHDR = Buffer.alloc(1);
           this.MHDR.writeUInt8(mhdr_idx << 5, 0);
@@ -524,7 +533,7 @@ class LoraPacket {
    * Provide MType as a string
    */
   public getMType(): string {
-    return MTYPE_DESCRIPTIONS[this._getMType()];
+    return MTYPE_DESCRIPTIONS[this._getMType()] || "Proprietary";
   }
 
   /**

@@ -180,11 +180,9 @@ class LoraPacket {
       }
     } else if (this.isDataMessage()) {
       this.FCtrl = reverseBuffer(incoming.slice(5, 6))
-      // this.FCtrl = this.MACPayload.slice(4, 5);
       const FCtrl = this.FCtrl.readInt8(0);
       const FOptsLen = FCtrl & 0x0f;
       this.FOpts = incoming.slice(8, 8 + FOptsLen)
-      // this.FOpts = this.MACPayload.slice(7, 7 + FOptsLen);
       const FHDR_length = 7 + FOptsLen;
       this.FHDR = incoming.slice(1, 1 + FHDR_length);
       this.DevAddr = reverseBuffer(incoming.slice(1, 5));

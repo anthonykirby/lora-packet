@@ -158,8 +158,8 @@ class LoraPacket {
       this.AppNonce = reverseBuffer(incoming.slice(1, 1 + 3));
       this.NetID = reverseBuffer(incoming.slice(4, 4 + 3));
       this.DevAddr = reverseBuffer(incoming.slice(7, 7 + 4));
-      this.DLSettings = incoming.slice(11, 11 + 1);
-      this.RxDelay = incoming.slice(12, 12 + 1);
+      this.DLSettings = reverseBuffer(incoming.slice(11, 11 + 1));
+      this.RxDelay = reverseBuffer(incoming.slice(12, 12 + 1));
       this.JoinReqType = Buffer.from([0xff]);
 
       if (incoming.length == 13 + 16 + 4) {

@@ -142,14 +142,14 @@ class LoraPacket {
     const mtype = this._getMType();
 
     if (mtype == MType.JOIN_REQUEST) {
-      if (incoming.length < 5 + 18) { 
+      if (incoming.length < 5 + 18) {
         throw new Error("contents too short for a Join Request");
       }
       this.AppEUI = reverseBuffer(incoming.slice(1, 1 + 8));
       this.DevEUI = reverseBuffer(incoming.slice(9, 9 + 8));
       this.DevNonce = reverseBuffer(incoming.slice(17, 17 + 2));
     } else if (mtype == MType.JOIN_ACCEPT) {
-      if (incoming.length < 5 + 12) { 
+      if (incoming.length < 5 + 12) {
         throw new Error("contents too short for a Join Accept");
       }
       this.AppNonce = reverseBuffer(incoming.slice(1, 1 + 3));
@@ -167,14 +167,14 @@ class LoraPacket {
     } else if (mtype == MType.REJOIN_REQUEST) {
       this.RejoinType = incoming.slice(1, 1 + 1);
       if (this.RejoinType[0] === 0 || this.RejoinType[0] === 2) {
-        if (incoming.length < 5 + 14) { 
+        if (incoming.length < 5 + 14) {
           throw new Error("contents too short for a Rejoin Request (Type 0/2)");
         }
         this.NetID = reverseBuffer(incoming.slice(2, 2 + 3));
         this.DevEUI = reverseBuffer(incoming.slice(5, 5 + 8));
         this.RJCount0 = reverseBuffer(incoming.slice(13, 13 + 2));
       } else if (this.RejoinType[0] === 1) {
-        if (incoming.length < 5 + 19) { 
+        if (incoming.length < 5 + 19) {
           throw new Error("contents too short for a Rejoin Request (Type 1)");
         }
         this.JoinEUI = reverseBuffer(incoming.slice(2, 2 + 8));

@@ -167,7 +167,7 @@ class LoraPacket {
       } else if (this.RejoinType[0] === 1) {
         this.JoinEUI = reverseBuffer(incoming.slice(2, 2 + 8));
         this.DevEUI = reverseBuffer(incoming.slice(10, 10 + 8));
-        this.RJCount1 = reverseBuffer(incoming.slice(13, 13 + 2));
+        this.RJCount1 = reverseBuffer(incoming.slice(18, 18 + 2));
       }
     } else if (this.isDataMessage()) {
       this.FCtrl = this.MACPayload.slice(4, 5);

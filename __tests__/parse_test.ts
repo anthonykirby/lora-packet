@@ -244,13 +244,13 @@ describe("parse example payload", () => {
   });
 
   it("should parse Rejoin Request packets", () => {
-    const message_hex = "C0008B658839";
+    const message_hex = "C000112233112233445566778811228B658839";
 
     const expectedPayload = {
-      PHYPayload: Buffer.from("C0008B658839", "hex"),
-      MACPayloadWithMIC: Buffer.from("008B658839", "hex"),
+      PHYPayload: Buffer.from("C000112233112233445566778811228B658839", "hex"),
+      MACPayloadWithMIC: Buffer.from("00112233112233445566778811228B658839", "hex"),
       MHDR: Buffer.from("C0", "hex"),
-      MACPayload: Buffer.from("00", "hex"),
+      MACPayload: Buffer.from("0011223311223344556677881122", "hex"),
       MIC: Buffer.from("8B658839", "hex"),
     };
 

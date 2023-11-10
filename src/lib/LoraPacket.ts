@@ -725,10 +725,14 @@ class LoraPacket {
     return this._getMType() == MType.JOIN_REQUEST;
   }
 
-  public isReJoinRequestMessage() {
+  public isRejoinRequestMessage() {
     return this._getMType() == MType.REJOIN_REQUEST;
   }
 
+  // deprecated (bogus capitalisation)
+  public isReJoinRequestMessage() {
+    return this._getMType() == MType.REJOIN_REQUEST;
+  }
   public isJoinAcceptMessage() {
     return this._getMType() == MType.JOIN_ACCEPT;
   }
@@ -778,6 +782,29 @@ class LoraPacket {
         msg += "               FreqCh6 = " + asHexString(this.getCFListFreqChSix()) + "\n";
         msg += "               FreqCh7 = " + asHexString(this.getCFListFreqChSeven()) + "\n";
         msg += "               FreqCh8 = " + asHexString(this.getCFListFreqChEight()) + "\n";
+      }
+    } else if (this.isRejoinRequestMessage()) {
+      msg += "          Message Type = ReJoin Request" + "\n";
+      msg += "            PHYPayload = " + asHexString(this.PHYPayload).toUpperCase() + "\n";
+      msg += "\n";
+      msg += "          ( PHYPayload = MHDR[1] | MACPayload[..] | MIC[4] )\n";
+      msg += "                  MHDR = " + asHexString(this.MHDR) + "\n";
+      msg += "            MACPayload = " + asHexString(this.MACPayload) + "\n";
+      msg += "                   MIC = " + asHexString(this.MIC) + "\n";
+      msg += "\n";
+
+      if (this.RejoinType[0] === 0 || this.RejoinType[0] === 2) {
+        msg += "          ( MACPayload = RejoinType[1] | NetID[3] | DevEUI[8] | RJCount0[2] )\n";
+        msg += "            RejoinType = " + asHexString(this.RejoinType) + "\n";
+        msg += "                 NetID = " + asHexString(this.NetID) + "\n";
+        msg += "                DevEUI = " + asHexString(this.DevEUI) + "\n";
+        msg += "              RJCount0 = " + asHexString(this.RJCount0) + "\n";
+      } else if (this.RejoinType[0] === 1) {
+        msg += "          ( MACPayload = RejoinType[1] | JoinEUI[8] | DevEUI[8] | RJCount0[2] )\n";
+        msg += "            RejoinType = " + asHexString(this.RejoinType) + "\n";
+        msg += "               JoinEUI = " + asHexString(this.JoinEUI) + "\n";
+        msg += "                DevEUI = " + asHexString(this.DevEUI) + "\n";
+        msg += "              RJCount0 = " + asHexString(this.RJCount0) + "\n";
       }
     } else if (this.isDataMessage()) {
       msg += "Message Type = Data" + "\n";

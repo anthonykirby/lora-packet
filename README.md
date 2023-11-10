@@ -292,9 +292,10 @@ you'll find helpful.
 #### Version history
 
 (unreleased)
+- 0.8.25
 - - sanity checks in fromWire
 - - fix parsing RejoinRequest
-
+- - add toString output for RejoinRequest
 - 0.8.24 bump crypto-js to 4.2.0 (CVE-2023-46233)
 - 0.8.23 bump @babel/traverse to 7.23.2
 - 0.8.22 add WOR keys

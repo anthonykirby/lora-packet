@@ -1,6 +1,6 @@
 {
   "name": "lora-packet",
-  "version": "0.8.24",
+  "version": "0.8.25",
   "author": "Anthony Kirby",
   "description": "LoRa packet decoder/encoder",
   "keywords": [

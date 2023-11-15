@@ -1,7 +1,7 @@
-import { reverseBuffer, asHexString } from "./util";
-import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
-import { recalculateMIC } from "./mic";
-import { Buffer } from "buffer";
+import {reverseBuffer, asHexString} from "./util";
+import {decrypt, decryptJoin, decryptFOpts} from "./crypto";
+import {recalculateMIC} from "./mic";
+import {Buffer} from "buffer";
 
 enum MType {
   JOIN_REQUEST = 0,
@@ -68,11 +68,11 @@ const PACKET_STRUCTURES: PacketStructures = {
 }
 
 
-
 enum LorawanVersion {
   V1_0 = "1.0",
   V1_1 = "1.1",
 }
+
 enum Masks {
   FCTRL_ADR = 0x80,
   FCTRL_ADRACKREQ = 0x40,
@@ -119,9 +119,9 @@ function extractBytesFromBuffer(buffer: Buffer, start: number, end: number): Buf
 
 function extractStructuredBytesFromBuffer(
   buffer: Buffer, name: string
-): {[key: string]: Buffer} {
+): { [key: string]: Buffer } {
   const structure = PACKET_STRUCTURES[name];
-  let ret: {[key: string]: Buffer} = {};
+  let ret: { [key: string]: Buffer } = {};
   for (const key in structure) {
     if (structure.hasOwnProperty(key)) {
       ret[key] = extractBytesFromBuffer(
@@ -751,6 +751,7 @@ class LoraPacket {
   ): Buffer {
     return this.encryptFOpts(NwkSEncKey, NwkSKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
   }
+
   public encryptFOpts(
     NwkSEncKey: Buffer,
     SNwkSIntKey?: Buffer,
@@ -907,4 +908,4 @@ class LoraPacket {
 }
 
 export default LoraPacket;
-export { LorawanVersion };
+export {LorawanVersion};

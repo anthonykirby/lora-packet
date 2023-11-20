@@ -1,23 +1,79 @@
-import { reverseBuffer, asHexString } from "./util";
-import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
-import { recalculateMIC } from "./mic";
-import { Buffer } from "buffer";
+import {reverseBuffer, asHexString} from "./util";
+import {decrypt, decryptJoin, decryptFOpts} from "./crypto";
+import {recalculateMIC} from "./mic";
+import {Buffer} from "buffer";
 
 enum MType {
-  JOIN_REQUEST,
-  JOIN_ACCEPT,
-  UNCONFIRMED_DATA_UP,
-  UNCONFIRMED_DATA_DOWN,
-  CONFIRMED_DATA_UP,
-  CONFIRMED_DATA_DOWN,
-  REJOIN_REQUEST,
+  JOIN_REQUEST = 0,
+  JOIN_ACCEPT = 1,
+  UNCONFIRMED_DATA_UP = 2,
+  UNCONFIRMED_DATA_DOWN = 3,
+  CONFIRMED_DATA_UP = 4,
+  CONFIRMED_DATA_DOWN = 5,
+  REJOIN_REQUEST = 6,
 }
+
+const MTYPE_DESCRIPTIONS: { [key: number]: string } = {
+  [MType.JOIN_REQUEST]: "Join Request",
+  [MType.JOIN_ACCEPT]: "Join Accept",
+  [MType.UNCONFIRMED_DATA_UP]: "Unconfirmed Data Up",
+  [MType.UNCONFIRMED_DATA_DOWN]: "Unconfirmed Data Down",
+  [MType.CONFIRMED_DATA_UP]: "Confirmed Data Up",
+  [MType.CONFIRMED_DATA_DOWN]: "Confirmed Data Down",
+  [MType.REJOIN_REQUEST]: "Rejoin Request",
+};
+
+const DESCRIPTIONS_MTYPE: { [description: string]: MType } = Object.keys(MTYPE_DESCRIPTIONS)
+  .reduce((acc, key) => {
+    const mTypeKey = key as unknown as MType; // Cast the key to MType
+    const description = MTYPE_DESCRIPTIONS[mTypeKey];
+    acc[description] = mTypeKey;
+    return acc;
+  }, {} as { [description: string]: MType });
+
+type Range = {
+  start: number;
+  end: number;
+};
+
+type PacketStructures = {
+  [key: string]: {
+    [key: string]: Range;
+  };
+};
+
+const PACKET_STRUCTURES: PacketStructures = {
+  JOIN_REQUEST: {
+    AppEUI: {start: 1, end: 9},
+    DevEUI: {start: 9, end: 17},
+    DevNonce: {start: 17, end: 19}
+  },
+  JOIN_ACCEPT: {
+    AppNonce: {start: 1, end: 4},
+    NetID: {start: 4, end: 7},
+    DevAddr: {start: 7, end: 11},
+    DLSettings: {start: 11, end: 12},
+    RxDelay: {start: 12, end: 13},
+  },
+  REJOIN_TYPE_1: {
+    NetID: {start: 2, end: 5},
+    DevEUI: {start: 5, end: 13},
+    RJCount0: {start: 13, end: 15}
+  },
+  REJOIN_TYPE_2: {
+    JoinEUI: {start: 2, end: 10},
+    DevEUI: {start: 10, end: 18},
+    RJCount1: {start: 13, end: 15}
+  }
+}
+
 
 enum LorawanVersion {
   V1_0 = "1.0",
   V1_1 = "1.1",
 }
-enum Constants {
+
+enum Masks {
   FCTRL_ADR = 0x80,
   FCTRL_ADRACKREQ = 0x40,
   FCTRL_ACK = 0x20,
@@ -32,18 +88,8 @@ enum Constants {
   RXDELAY_DEL_POS = 0,
 }
 
-const MTYPE_DESCRIPTIONS = [
-  "Join Request",
-  "Join Accept",
-  "Unconfirmed Data Up",
-  "Unconfirmed Data Down",
-  "Confirmed Data Up",
-  "Confirmed Data Down",
-  "Rejoin Request",
-  "Proprietary",
-];
 
-export interface IUserFields {
+export interface UserFields {
   CFList?: Buffer;
   RxDelay?: Buffer | number;
   DLSettings?: Buffer | number;
@@ -67,6 +113,27 @@ export interface IUserFields {
   JoinReqType?: Buffer | number;
 }
 
+function extractBytesFromBuffer(buffer: Buffer, start: number, end: number): Buffer {
+  return reverseBuffer(buffer.slice(start, end));
+}
+
+function extractStructuredBytesFromBuffer(
+  buffer: Buffer, name: string
+): { [key: string]: Buffer } {
+  const structure = PACKET_STRUCTURES[name];
+  let ret: { [key: string]: Buffer } = {};
+  for (const key in structure) {
+    if (structure.hasOwnProperty(key)) {
+      ret[key] = extractBytesFromBuffer(
+        buffer,
+        structure[key].start,
+        structure[key].end
+      );
+    }
+  }
+  return ret;
+}
+
 class LoraPacket {
   static fromWire(buffer: Buffer): LoraPacket {
     const payload = new LoraPacket();
@@ -75,7 +142,7 @@ class LoraPacket {
   }
 
   static fromFields(
-    fields: IUserFields,
+    fields: UserFields,
     AppSKey?: Buffer,
     NwkSKey?: Buffer,
     AppKey?: Buffer,
@@ -91,7 +158,7 @@ class LoraPacket {
 
       const port = payload.getFPort();
 
-      if (port != null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
+      if (port !== null && ((port === 0 && NwkSKey?.length === 16) || (port > 0 && AppSKey?.length === 16))) {
         // crypto is reversible (just XORs FRMPayload), so we can
         //  just do "decrypt" on the plaintext to get ciphertext
 
@@ -129,6 +196,11 @@ class LoraPacket {
     return payload;
   }
 
+  private assignFromStructuredBuffer(buffer: Buffer, structure: string) {
+    const fields = extractStructuredBytesFromBuffer(buffer, structure)
+    Object.assign(this, fields)
+  }
+
   private _initfromWire(contents: Buffer): void {
     const incoming = Buffer.from(contents);
 
@@ -145,18 +217,12 @@ class LoraPacket {
       if (incoming.length < 5 + 18) {
         throw new Error("contents too short for a Join Request");
       }
-      this.AppEUI = reverseBuffer(incoming.slice(1, 1 + 8));
-      this.DevEUI = reverseBuffer(incoming.slice(9, 9 + 8));
-      this.DevNonce = reverseBuffer(incoming.slice(17, 17 + 2));
+      this.assignFromStructuredBuffer(incoming, "JOIN_REQUEST");
     } else if (mtype == MType.JOIN_ACCEPT) {
       if (incoming.length < 5 + 12) {
         throw new Error("contents too short for a Join Accept");
       }
-      this.AppNonce = reverseBuffer(incoming.slice(1, 1 + 3));
-      this.NetID = reverseBuffer(incoming.slice(4, 4 + 3));
-      this.DevAddr = reverseBuffer(incoming.slice(7, 7 + 4));
-      this.DLSettings = incoming.slice(11, 11 + 1);
-      this.RxDelay = incoming.slice(12, 12 + 1);
+      this.assignFromStructuredBuffer(incoming, "JOIN_ACCEPT");
       this.JoinReqType = Buffer.from([0xff]);
 
       if (incoming.length == 13 + 16 + 4) {
@@ -170,45 +236,42 @@ class LoraPacket {
         if (incoming.length < 5 + 14) {
           throw new Error("contents too short for a Rejoin Request (Type 0/2)");
         }
-        this.NetID = reverseBuffer(incoming.slice(2, 2 + 3));
-        this.DevEUI = reverseBuffer(incoming.slice(5, 5 + 8));
-        this.RJCount0 = reverseBuffer(incoming.slice(13, 13 + 2));
+        this.assignFromStructuredBuffer(incoming, "REJOIN_TYPE_1");
       } else if (this.RejoinType[0] === 1) {
         if (incoming.length < 5 + 19) {
           throw new Error("contents too short for a Rejoin Request (Type 1)");
         }
-        this.JoinEUI = reverseBuffer(incoming.slice(2, 2 + 8));
-        this.DevEUI = reverseBuffer(incoming.slice(10, 10 + 8));
-        this.RJCount1 = reverseBuffer(incoming.slice(18, 18 + 2));
+        this.assignFromStructuredBuffer(incoming, "REJOIN_TYPE_2");
       }
     } else if (this.isDataMessage()) {
-      this.FCtrl = this.MACPayload.slice(4, 5);
+      this.DevAddr = reverseBuffer(incoming.slice(1, 5));
+      this.FCtrl = reverseBuffer(incoming.slice(5, 6))
+      this.FCnt = reverseBuffer(incoming.slice(6, 8));
+
       const FCtrl = this.FCtrl.readInt8(0);
       const FOptsLen = FCtrl & 0x0f;
-      this.FOpts = this.MACPayload.slice(7, 7 + FOptsLen);
+      this.FOpts = incoming.slice(8, 8 + FOptsLen)
       const FHDR_length = 7 + FOptsLen;
-      this.FHDR = this.MACPayload.slice(0, 0 + FHDR_length);
-      this.DevAddr = reverseBuffer(this.FHDR.slice(0, 4));
+      this.FHDR = incoming.slice(1, 1 + FHDR_length);
 
-      this.FCnt = reverseBuffer(this.FHDR.slice(5, 7));
 
       if (FHDR_length == this.MACPayload.length) {
         this.FPort = Buffer.alloc(0);
         this.FRMPayload = Buffer.alloc(0);
       } else {
-        this.FPort = this.MACPayload.slice(FHDR_length, FHDR_length + 1);
-        this.FRMPayload = this.MACPayload.slice(FHDR_length + 1);
+        this.FPort = incoming.slice(FHDR_length + 1, FHDR_length + 2);
+        this.FRMPayload = incoming.slice(FHDR_length + 2, incoming.length - 4);
       }
     }
   }
 
-  private _initFromFields(userFields: IUserFields): void {
+  private _initFromFields(userFields: UserFields): void {
     if (typeof userFields.MType !== "undefined") {
       let MTypeNo;
       if (typeof userFields.MType === "number") {
         MTypeNo = userFields.MType;
       } else if (typeof userFields.MType == "string") {
-        const mhdr_idx = MTYPE_DESCRIPTIONS.indexOf(userFields.MType);
+        const mhdr_idx = DESCRIPTIONS_MTYPE[userFields.MType];
         if (mhdr_idx >= 0) {
           MTypeNo = mhdr_idx;
         } else {
@@ -276,7 +339,7 @@ class LoraPacket {
     }
   }
 
-  private _initialiseDataPacketFromFields(userFields: IUserFields): void {
+  private _initialiseDataPacketFromFields(userFields: UserFields): void {
     if (userFields.DevAddr && userFields.DevAddr.length == 4) {
       this.DevAddr = Buffer.from(userFields.DevAddr);
     } else {
@@ -294,7 +357,7 @@ class LoraPacket {
         this.MHDR = Buffer.alloc(1);
         this.MHDR.writeUInt8(userFields.MType << 5, 0);
       } else if (typeof userFields.MType === "string") {
-        const mhdr_idx = MTYPE_DESCRIPTIONS.indexOf(userFields.MType);
+        const mhdr_idx = DESCRIPTIONS_MTYPE[userFields.MType];
         if (mhdr_idx >= 0) {
           this.MHDR = Buffer.alloc(1);
           this.MHDR.writeUInt8(mhdr_idx << 5, 0);
@@ -334,16 +397,16 @@ class LoraPacket {
 
     let fctrl = 0;
     if (userFields.FCtrl?.ADR) {
-      fctrl |= Constants.FCTRL_ADR;
+      fctrl |= Masks.FCTRL_ADR;
     }
     if (userFields.FCtrl?.ADRACKReq) {
-      fctrl |= Constants.FCTRL_ADRACKREQ;
+      fctrl |= Masks.FCTRL_ADRACKREQ;
     }
     if (userFields.FCtrl?.ACK) {
-      fctrl |= Constants.FCTRL_ACK;
+      fctrl |= Masks.FCTRL_ACK;
     }
     if (userFields.FCtrl?.FPending) {
-      fctrl |= Constants.FCTRL_FPENDING;
+      fctrl |= Masks.FCTRL_FPENDING;
     }
 
     fctrl |= this.FOpts.length & 0x0f;
@@ -383,7 +446,7 @@ class LoraPacket {
     this._mergeGroupFields();
   }
 
-  private _initialiseJoinRequestPacketFromFields(userFields: IUserFields): void {
+  private _initialiseJoinRequestPacketFromFields(userFields: UserFields): void {
     if (userFields.AppEUI && userFields.AppEUI.length == 8) {
       this.AppEUI = Buffer.from(userFields.AppEUI);
     } else {
@@ -422,7 +485,7 @@ class LoraPacket {
     this._mergeGroupFields();
   }
 
-  private _initialiseJoinAcceptPacketFromFields(userFields: IUserFields): void {
+  private _initialiseJoinAcceptPacketFromFields(userFields: UserFields): void {
     if (userFields.AppNonce && userFields.AppNonce.length == 3) {
       this.AppNonce = Buffer.from(userFields.AppNonce);
     } else {
@@ -522,21 +585,21 @@ class LoraPacket {
 
   public isDataMessage(): boolean {
     const mtype = this._getMType();
-    if (mtype >= MType.UNCONFIRMED_DATA_UP && mtype <= MType.CONFIRMED_DATA_DOWN) return true;
-    return false;
+    return mtype >= MType.UNCONFIRMED_DATA_UP && mtype <= MType.CONFIRMED_DATA_DOWN;
+
   }
 
   public isConfirmed(): boolean {
     const mtype = this._getMType();
-    if (mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP) return true;
-    return false;
+    return mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP;
+
   }
 
   /**
    * Provide MType as a string
    */
   public getMType(): string {
-    return MTYPE_DESCRIPTIONS[this._getMType()];
+    return MTYPE_DESCRIPTIONS[this._getMType()] || "Proprietary";
   }
 
   /**
@@ -570,7 +633,7 @@ class LoraPacket {
    */
   public getFCtrlACK(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ACK);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ACK);
   }
 
   /**
@@ -578,7 +641,7 @@ class LoraPacket {
    */
   public getFCtrlADR(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ADR);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ADR);
   }
 
   /**
@@ -586,7 +649,7 @@ class LoraPacket {
    */
   public getFCtrlADRACKReq(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_ADRACKREQ);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_ADRACKREQ);
   }
 
   /**
@@ -594,7 +657,7 @@ class LoraPacket {
    */
   public getFCtrlFPending(): boolean | null {
     if (!this.FCtrl) return null;
-    return !!(this.FCtrl.readUInt8(0) & Constants.FCTRL_FPENDING);
+    return !!(this.FCtrl.readUInt8(0) & Masks.FCTRL_FPENDING);
   }
 
   /**
@@ -603,7 +666,7 @@ class LoraPacket {
   public getDLSettingsRxOneDRoffset(): number | null {
     if (!this.DLSettings) return null;
     return (
-      (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_RXONEDROFFSET_MASK) >> Constants.DLSETTINGS_RXONEDROFFSET_POS
+      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXONEDROFFSET_MASK) >> Masks.DLSETTINGS_RXONEDROFFSET_POS
     );
   }
 
@@ -613,7 +676,7 @@ class LoraPacket {
   public getDLSettingsRxTwoDataRate(): number | null {
     if (!this.DLSettings) return null;
     return (
-      (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_RXTWODATARATE_MASK) >> Constants.DLSETTINGS_RXTWODATARATE_POS
+      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXTWODATARATE_MASK) >> Masks.DLSETTINGS_RXTWODATARATE_POS
     );
   }
 
@@ -622,7 +685,7 @@ class LoraPacket {
    */
   public getDLSettingsOptNeg(): boolean | null {
     if (!this.DLSettings) return null;
-    return (this.DLSettings.readUInt8(0) & Constants.DLSETTINGS_OPTNEG_MASK) >> Constants.DLSETTINGS_OPTNEG_POS === 1;
+    return (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_OPTNEG_MASK) >> Masks.DLSETTINGS_OPTNEG_POS === 1;
   }
 
   /**
@@ -630,7 +693,7 @@ class LoraPacket {
    */
   public getRxDelayDel(): number | null {
     if (!this.RxDelay) return null;
-    return (this.RxDelay.readUInt8(0) & Constants.RXDELAY_DEL_MASK) >> Constants.RXDELAY_DEL_POS;
+    return (this.RxDelay.readUInt8(0) & Masks.RXDELAY_DEL_MASK) >> Masks.RXDELAY_DEL_POS;
   }
 
   /**
@@ -700,6 +763,7 @@ class LoraPacket {
   ): Buffer {
     return this.encryptFOpts(NwkSEncKey, NwkSKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
   }
+
   public encryptFOpts(
     NwkSEncKey: Buffer,
     SNwkSIntKey?: Buffer,
@@ -883,4 +947,4 @@ class LoraPacket {
 }
 
 export default LoraPacket;
-export { LorawanVersion };
+export {LorawanVersion};

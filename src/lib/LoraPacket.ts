@@ -1,7 +1,7 @@
-import {reverseBuffer, asHexString} from "./util";
-import {decrypt, decryptJoin, decryptFOpts} from "./crypto";
-import {recalculateMIC} from "./mic";
-import {Buffer} from "buffer";
+import { reverseBuffer, asHexString } from "./util";
+import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
+import { recalculateMIC } from "./mic";
+import { Buffer } from "buffer";
 
 enum MType {
   JOIN_REQUEST = 0,
@@ -23,13 +23,12 @@ const MTYPE_DESCRIPTIONS: { [key: number]: string } = {
   [MType.REJOIN_REQUEST]: "Rejoin Request",
 };
 
-const DESCRIPTIONS_MTYPE: { [description: string]: MType } = Object.keys(MTYPE_DESCRIPTIONS)
-  .reduce((acc, key) => {
-    const mTypeKey = key as unknown as MType; // Cast the key to MType
-    const description = MTYPE_DESCRIPTIONS[mTypeKey];
-    acc[description] = mTypeKey;
-    return acc;
-  }, {} as { [description: string]: MType });
+const DESCRIPTIONS_MTYPE: { [description: string]: MType } = Object.keys(MTYPE_DESCRIPTIONS).reduce((acc, key) => {
+  const mTypeKey = (key as unknown) as MType; // Cast the key to MType
+  const description = MTYPE_DESCRIPTIONS[mTypeKey];
+  acc[description] = mTypeKey;
+  return acc;
+}, {} as { [description: string]: MType });
 
 type Range = {
   start: number;
@@ -44,29 +43,28 @@ type PacketStructures = {
 
 const PACKET_STRUCTURES: PacketStructures = {
   JOIN_REQUEST: {
-    AppEUI: {start: 1, end: 9},
-    DevEUI: {start: 9, end: 17},
-    DevNonce: {start: 17, end: 19}
+    AppEUI: { start: 1, end: 9 },
+    DevEUI: { start: 9, end: 17 },
+    DevNonce: { start: 17, end: 19 },
   },
   JOIN_ACCEPT: {
-    AppNonce: {start: 1, end: 4},
-    NetID: {start: 4, end: 7},
-    DevAddr: {start: 7, end: 11},
-    DLSettings: {start: 11, end: 12},
-    RxDelay: {start: 12, end: 13},
+    AppNonce: { start: 1, end: 4 },
+    NetID: { start: 4, end: 7 },
+    DevAddr: { start: 7, end: 11 },
+    DLSettings: { start: 11, end: 12 },
+    RxDelay: { start: 12, end: 13 },
   },
   REJOIN_TYPE_1: {
-    NetID: {start: 2, end: 5},
-    DevEUI: {start: 5, end: 13},
-    RJCount0: {start: 13, end: 15}
+    NetID: { start: 2, end: 5 },
+    DevEUI: { start: 5, end: 13 },
+    RJCount0: { start: 13, end: 15 },
   },
   REJOIN_TYPE_2: {
-    JoinEUI: {start: 2, end: 10},
-    DevEUI: {start: 10, end: 18},
-    RJCount1: {start: 13, end: 15}
-  }
-}
-
+    JoinEUI: { start: 2, end: 10 },
+    DevEUI: { start: 10, end: 18 },
+    RJCount1: { start: 13, end: 15 },
+  },
+};
 
 enum LorawanVersion {
   V1_0 = "1.0",
@@ -87,7 +85,6 @@ enum Masks {
   RXDELAY_DEL_MASK = 0x0f,
   RXDELAY_DEL_POS = 0,
 }
-
 
 export interface UserFields {
   CFList?: Buffer;
@@ -117,18 +114,12 @@ function extractBytesFromBuffer(buffer: Buffer, start: number, end: number): Buf
   return reverseBuffer(buffer.slice(start, end));
 }
 
-function extractStructuredBytesFromBuffer(
-  buffer: Buffer, name: string
-): { [key: string]: Buffer } {
+function extractStructuredBytesFromBuffer(buffer: Buffer, name: string): { [key: string]: Buffer } {
   const structure = PACKET_STRUCTURES[name];
-  let ret: { [key: string]: Buffer } = {};
+  const ret: { [key: string]: Buffer } = {};
   for (const key in structure) {
     if (structure.hasOwnProperty(key)) {
-      ret[key] = extractBytesFromBuffer(
-        buffer,
-        structure[key].start,
-        structure[key].end
-      );
+      ret[key] = extractBytesFromBuffer(buffer, structure[key].start, structure[key].end);
     }
   }
   return ret;
@@ -197,8 +188,8 @@ class LoraPacket {
   }
 
   private assignFromStructuredBuffer(buffer: Buffer, structure: string) {
-    const fields = extractStructuredBytesFromBuffer(buffer, structure)
-    Object.assign(this, fields)
+    const fields = extractStructuredBytesFromBuffer(buffer, structure);
+    Object.assign(this, fields);
   }
 
   private _initfromWire(contents: Buffer): void {
@@ -245,15 +236,14 @@ class LoraPacket {
       }
     } else if (this.isDataMessage()) {
       this.DevAddr = reverseBuffer(incoming.slice(1, 5));
-      this.FCtrl = reverseBuffer(incoming.slice(5, 6))
+      this.FCtrl = reverseBuffer(incoming.slice(5, 6));
       this.FCnt = reverseBuffer(incoming.slice(6, 8));
 
       const FCtrl = this.FCtrl.readInt8(0);
       const FOptsLen = FCtrl & 0x0f;
-      this.FOpts = incoming.slice(8, 8 + FOptsLen)
+      this.FOpts = incoming.slice(8, 8 + FOptsLen);
       const FHDR_length = 7 + FOptsLen;
       this.FHDR = incoming.slice(1, 1 + FHDR_length);
-
 
       if (FHDR_length == this.MACPayload.length) {
         this.FPort = Buffer.alloc(0);
@@ -586,13 +576,11 @@ class LoraPacket {
   public isDataMessage(): boolean {
     const mtype = this._getMType();
     return mtype >= MType.UNCONFIRMED_DATA_UP && mtype <= MType.CONFIRMED_DATA_DOWN;
-
   }
 
   public isConfirmed(): boolean {
     const mtype = this._getMType();
     return mtype === MType.CONFIRMED_DATA_DOWN || mtype === MType.CONFIRMED_DATA_UP;
-
   }
 
   /**
@@ -665,9 +653,7 @@ class LoraPacket {
    */
   public getDLSettingsRxOneDRoffset(): number | null {
     if (!this.DLSettings) return null;
-    return (
-      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXONEDROFFSET_MASK) >> Masks.DLSETTINGS_RXONEDROFFSET_POS
-    );
+    return (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXONEDROFFSET_MASK) >> Masks.DLSETTINGS_RXONEDROFFSET_POS;
   }
 
   /**
@@ -675,9 +661,7 @@ class LoraPacket {
    */
   public getDLSettingsRxTwoDataRate(): number | null {
     if (!this.DLSettings) return null;
-    return (
-      (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXTWODATARATE_MASK) >> Masks.DLSETTINGS_RXTWODATARATE_POS
-    );
+    return (this.DLSettings.readUInt8(0) & Masks.DLSETTINGS_RXTWODATARATE_MASK) >> Masks.DLSETTINGS_RXTWODATARATE_POS;
   }
 
   /**
@@ -947,4 +931,4 @@ class LoraPacket {
 }
 
 export default LoraPacket;
-export {LorawanVersion};
+export { LorawanVersion };

@@ -291,7 +291,7 @@ you'll find helpful.
 
 #### Version history
 
-(unreleased)
+- 0.9.0 refactor to improve readabilty and modularity
 - 0.8.25
 - - sanity checks in fromWire
 - - fix parsing RejoinRequest

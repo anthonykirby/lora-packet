@@ -261,6 +261,9 @@ const wireFormatPacket = constructedPacket.getPHYPayload();
 console.log("wireFormatPacket.toString()=\n" + wireFormatPacket.toString("hex"));
 ```
 
+## Online Demo
+For testing purposes, you can use the [Online Demo](https://lora-packet.vercel.app/)
+
 ## Notes:
 
 #### Endianness

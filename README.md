@@ -261,7 +261,14 @@ const wireFormatPacket = constructedPacket.getPHYPayload();
 console.log("wireFormatPacket.toString()=\n" + wireFormatPacket.toString("hex"));
 ```
 
+
 ## Notes:
+
+#### Online Decoder
+
+There's a nice [online decoder that uses this library](https://runkit.io/avbentem/lorawan-packet-decoder/branches/master).
+
+NB this is created & maintained by a third party & I can't support or answer questions about it.
 
 #### Endianness
 
@@ -337,7 +344,6 @@ you'll find helpful.
 - 0.3.0 refactor to allow packet creation
 - 0.2.0 initial release as npm
 
-[Travi CI builds](https://travis-ci.org/anthonykirby/lora-packet)
 
 #### TODO
 

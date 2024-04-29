@@ -2,7 +2,6 @@ import LoraPacket, { LorawanVersion } from "./LoraPacket";
 import { reverseBuffer } from "./util";
 
 import { AesCmac } from "aes-cmac";
-import { Buffer } from "buffer";
 
 // calculate MIC from payload
 function calculateMIC(

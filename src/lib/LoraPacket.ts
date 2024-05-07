@@ -1,7 +1,6 @@
 import { reverseBuffer, asHexString } from "./util";
 import { decrypt, decryptJoin, decryptFOpts } from "./crypto";
 import { recalculateMIC } from "./mic";
-import { Buffer } from "buffer";
 
 enum MType {
   JOIN_REQUEST = 0,

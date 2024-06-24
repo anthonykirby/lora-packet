@@ -1,7 +1,6 @@
-import LoraPacket, { LorawanVersion } from "./LoraPacket";
+import LoraPacket from "./LoraPacket";
 import { reverseBuffer } from "./util";
 import CryptoJS from "crypto-js";
-import { Buffer } from "buffer";
 
 const LORAIV = CryptoJS.enc.Hex.parse("00000000000000000000000000000000");
 

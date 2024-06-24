@@ -298,6 +298,7 @@ you'll find helpful.
 
 #### Version history
 
+- 0.9.2 bump ws to 7.5.10, braces to 3.0.3:  Drop test support for node.js \> 16
 - 0.9.1 remove Buffer dependency, and support more Node versions
 - 0.9.0 refactor to improve readabilty and modularity
 - 0.8.25

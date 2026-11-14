@@ -167,6 +167,10 @@ class LoraPacket {
           recalculateMIC(payload, NwkSKey, AppKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
           payload._mergeGroupFields();
         }
+      } else if (port === null && NwkSKey?.length === 16) {
+        // no FPort means no FRMPayload to encrypt, but the frame still needs a MIC
+        recalculateMIC(payload, NwkSKey, AppKey, FCntMSBytes, ConfFCntDownTxDrTxCh);
+        payload._mergeGroupFields();
       }
     } else if (payload._getMType() === MType.JOIN_REQUEST) {
       if (AppKey?.length === 16) {

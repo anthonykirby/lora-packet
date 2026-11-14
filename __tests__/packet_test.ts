@@ -1,6 +1,6 @@
 import LoraPayload from "../src/lib/LoraPacket";
 import { decrypt, decryptFOpts } from "../src/lib/crypto";
-import { recalculateMIC } from "../src/lib/mic";
+import { recalculateMIC, verifyMIC } from "../src/lib/mic";
 
 describe("construct packet from fields", () => {
   it("should create packet with minimal input", () => {
@@ -417,6 +417,25 @@ describe("construct packet from fields", () => {
 
     const parsed = LoraPayload.fromWire(expectedPayload.PHYPayload);
     expect(parsed).toMatchObject(expectedPayload);
+  });
+
+  it("should calculate MIC if keys provided and there is no FPort", () => {
+    const NwkSKey = Buffer.from("44024241ed4ce9a68c6a8bc055233fd3", "hex");
+    const packet = LoraPayload.fromFields(
+      {
+        MType: "Unconfirmed Data Up",
+        DevAddr: Buffer.from("01020304", "hex"),
+        FCnt: 1,
+        payload: "",
+      },
+      Buffer.from("ec925802ae430ca77fd3dd73cb2cc588", "hex"), // AppSKey
+      NwkSKey
+    );
+
+    expect(packet.getFPort()).toBeNull();
+    expect(packet.MIC).toMatchObject(Buffer.from("6f56783f", "hex"));
+    expect(packet.PHYPayload).toMatchObject(Buffer.from("40040302010001006f56783f", "hex"));
+    expect(verifyMIC(LoraPayload.fromWire(packet.getPHYPayload() as Buffer), NwkSKey)).toBe(true);
   });
 
   it("should encrypt if keys provided", () => {
